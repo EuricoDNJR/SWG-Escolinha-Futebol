@@ -102,15 +102,18 @@
       
       <div class="login-form">
         <form @submit.prevent="handleLogin">
-          <v-text-field class="input-field"
+          <v-text-field class="input-field altura"
             v-model="email"
             label="Email" 
-            variant="outlined"></v-text-field>
+            variant="outlined"
+            hide-details="auto"
+          ></v-text-field>
 
-          <v-text-field  class="input-field"
+          <v-text-field  class="input-field altura"
             v-model="senha"
             label="Senha" 
             variant="outlined"
+            hide-details="auto"
             :type="showPassword ? 'text' : 'password'"
             :append-inner-icon="showPassword ? 'mdi-eye':'mdi-eye-off'"
             @click:append-inner="showPassword = !showPassword"
@@ -132,6 +135,7 @@
             color="grey-darken-4"
             block
             prepend-icon="mdi-login"
+            min-height="10vh"
           >
             Entrar
           </v-btn>
@@ -188,5 +192,14 @@
     border-radius: 20px;
     padding: 10vmin 15px 15px 15px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+  }
+
+  .input-field{
+    margin-bottom: 3vh;
+  }
+
+  .input-field input{
+    font-size: 4vh;
+    height: 15vh;
   }
 </style>
