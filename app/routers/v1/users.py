@@ -20,32 +20,28 @@ from pydantic import BaseModel
 class SignUpSchema(BaseModel):
     email:str
     password:str
-
-    class Config:
-        schema_extra ={
-            "example":{
-                "email":"sample@gmail.com",
-                "password":"samplepass123"
-            }
-        }
-
+    cargo:str
 
 class LoginSchema(BaseModel):
     email:str
     password:str
 
-    class Config:
-        schema_extra ={
-            "example":{
-                "email":"sample@gmail.com",
-                "password":"samplepass123"
-            }
-        }
-
 @router.post('/signup', dependencies=[Depends(get_token_header)])
 async def create_an_account(user_data:SignUpSchema, jwt_token:str = Header(...)):
+    """
+    Create an account for the user.
+    E.g:
+
+        {
+            "email": "soumteste2@gmail.com",
+            "password": "bombadorato1",
+            "cargo": "Professor"
+        }
+
+    """
     email = user_data.email
     password = user_data.password
+    cargo = user_data.cargo
 
     try:
         user = auth.create_user(
@@ -65,7 +61,7 @@ async def create_an_account(user_data:SignUpSchema, jwt_token:str = Header(...))
         logging.info(f"Firebase JWT Token decoded")
 
         logging.info("Inserting user into database")
-        user = crud.create_user(firebaseId=decoded_token["uid"])
+        user = crud.create_user(firebaseId=user.uid, firebaseIdWhoCreated=decoded_token["uid"], email=user.email, cargo=cargo)
         logging.info("User inserted into database")
     
         return JSONResponse(content={"message" : f"User account created successfuly for user {user.id}"},
@@ -77,12 +73,27 @@ async def create_an_account(user_data:SignUpSchema, jwt_token:str = Header(...))
             detail= f"Account already created for the email {email}"
         )
 
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail= f"Error creating account for email {email}"
+        )
 
 
 
 
 @router.post('/login')
 async def create_access_token(user_data:LoginSchema):
+    """
+    Create an access token for the user.
+        E.g:
+
+        {
+            "email": "soumteste2@gmail.com",
+            "password": "bombadorato1"
+        }
+
+    """
     email = user_data.email
     password = user_data.password
 

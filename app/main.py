@@ -4,7 +4,7 @@ import dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers.v1 import users
+from .routers.v1 import teams, users, responsibles, students
 
 from .utils.helper import logging
 
@@ -51,6 +51,27 @@ app.include_router(
     users.router,
     prefix=f"/{route_version}",
     tags=["users"],
+    responses=response_404,
+)
+
+app.include_router(
+    responsibles.router,
+    prefix=f"/{route_version}",
+    tags=["responsibles"],
+    responses=response_404,
+)
+
+app.include_router(
+    teams.router,
+    prefix=f"/{route_version}",
+    tags=["teams"],
+    responses=response_404,
+)
+
+app.include_router(
+    students.router,
+    prefix=f"/{route_version}",
+    tags=["students"],
     responses=response_404,
 )
 
