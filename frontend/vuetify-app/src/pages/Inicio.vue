@@ -17,7 +17,7 @@
     <v-btn class="btn font-weight-bold"
       prepend-icon="mdi-account-plus-outline"
       stacked
-      to="/menu/matricular/"
+      to="/menu/cadastrar-responsavel/"
     >
       Cadastrar Responsável
     </v-btn>

@@ -6,7 +6,7 @@
     <v-btn class="btn font-weight-bold"
       prepend-icon="mdi-account-plus-outline"
       stacked
-      to="/menu/cadastrar-usuario/"
+      to="/menu/area-administrativa/cadastrar-usuario/"
     >
       Cadastrar Usuário 
     </v-btn>
@@ -30,6 +30,15 @@
       stacked
     >
       Listar Turmas
+    </v-btn>
+
+    <v-btn class="btn font-weight-bold"
+      prepend-icon="mdi-keyboard-return"
+      stacked
+      to="/menu/inicio/"
+      color="grey-lighten-2"
+    >
+      Voltar
     </v-btn>
   </div>
 </template>

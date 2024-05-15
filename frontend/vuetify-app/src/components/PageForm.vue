@@ -4,7 +4,7 @@
 
 
     const props = defineProps(['title', 'configs', 'fixies', 
-                            'customBtns', 'loadingCard']);
+                            'customBtns', 'loadingCard', 'textAlert']);
     const emit = defineEmits(['clicked']);
 
     let [fieldsObj, formFields] = createFormFields(
@@ -32,7 +32,6 @@
         const something = {};
         
         for(let title in fieldsObj){
-            console.log(fieldsObj[title].obj.value);
             something[fieldsObj[title].key] = fieldsObj[title].obj.value.trim();
         }
 
@@ -72,6 +71,9 @@
     </div>
 
     <v-divider></v-divider>
+    
+    
+  <h4 class="text-alert">{{ props.textAlert }}</h4>
 
     <v-card 
         class="elevation-0"
@@ -136,7 +138,7 @@
     </v-card>
 
     <v-divider></v-divider>   
-           
+
     <div class=btns>
         <v-btn v-for="(btn, i) in props.customBtns" :key="i"  
             :color="btn.color"
@@ -156,6 +158,7 @@
 .titulo{
     width: 100%;
     text-align: center;
+    margin-top: 2vh;
 }
 
 .btns{
@@ -167,5 +170,11 @@
 .btn{
     height: 8vh;
     flex-grow: 1;
+}
+
+.text-alert{
+  color: gray;
+  text-align: center;
+  width: 100%;
 }
 </style>

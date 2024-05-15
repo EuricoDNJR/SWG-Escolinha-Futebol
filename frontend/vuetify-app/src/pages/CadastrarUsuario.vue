@@ -8,14 +8,19 @@
   const router = useRouter();
   const authStore = useAuthStore();
 
+  const cargos = ref([
+    {nome: "Administrador"},
+    {nome: "Professor"}
+  ]);
+
   const customBtns = ref([
     {text: 'Voltar', variant: 'text', icon: undefined, color: undefined, clickEvent: 'voltar', needFormData: false, loading: false},
-    {text: 'Matricular', variant: 'flat', icon: 'mdi-account-plus', color: 'blue-darken-1', clickEvent: 'matricular', needFormData: true, loading: false},
+    {text: 'Cadastrar', variant: 'flat', icon: 'mdi-account-plus', color: 'green-darken-1', clickEvent: 'cadastrar', needFormData: true, loading: false},
   ]);
 
   const eventFunctions = {
     voltar: () => router.push('/menu/inicio/'),
-    matricular: (body) => requestMatricularAluno(body),
+    cadastrar: (body) => requestCadastrarUsuario(body),
   };
 
   const message = reactive({
@@ -40,25 +45,25 @@
     }   
   }
 
-  async function requestMatricularAluno(body){
-    const btn = customBtns.value.find((btn) => btn.clickEvent == "matricular");
+  async function requestCadastrarUsuario(body){
+    const btn = customBtns.value.find((btn) => btn.clickEvent == "cadastrar");
     btn.loading = true;
 
     try{
-        const url = "http://127.0.0.1:8003/v1/student/";
+        const url = "http://127.0.0.1:8003/v1/signup/";
         const token = authStore.getToken;
         
         const response = await fetchPost(url, body, token);
         const responseJson = await response.json();
-
+        
         if(response.status === 201){       
-          printMessage("Matrícula realizada com sucesso", "success");
+          printMessage("Cadastro realizado com sucesso", "success");
         }else{
-          printMessage("Erro ao realizar matrícula", "warning");
+          printMessage("Erro ao realizar cadastro", "warning");
         }
     }catch(e){
         console.log(e);
-        printMessage("Falha ao realizar matrícula", "warning");
+        printMessage("Falha ao realizar cadastro", "warning");
     }        
 
     btn.loading = false;
@@ -68,17 +73,19 @@
 
 <template>
   <PageForm 
-    title="Matricular Aluno"
+    title="Cadastrar Usuário"
     :configs="[
-      [createCelula({key:'nome', title:'Nome', required:true}), createCelula({key:'idade', title:'Idade', type:'number', required:true})],
-      [createCelula({key:'cpf', title:'Cpf', required:true}), createCelula({key:'contato', title:'Telefone', required:true})],
-      [createCelula({key:'data_nascimento', title:'Data de Nascimento', type: 'date', required:true}), createCelula({key:'email', title:'Email', required:true})],
-      [createCelula({key:'data_nascimento', title:'Data de Nascimento', type: 'date', required:true}), createCelula({key:'email', title:'Email', required:true})],
-      [createCelula({key:'data_nascimento', title:'Data de Nascimento', type: 'date', required:true}), createCelula({key:'email', title:'Email', required:true})],
+      [createCelula({key:'email', title:'Email', required:true}), createCelula({key:'password', title:'Senha', required:true})],
+      [createCelula({key:'cargo', title:'Cargo', type: 'select', required:true, initialValue: ''})],
     ]"
-    :fixies="[]"
+    :fixies="[
+      ['Cargo.items', cargos],
+      ['Cargo.itemsTitle', 'nome'],
+      ['Cargo.itemsValue', 'nome'],
+    ]"
     :customBtns="customBtns"
     @clicked="btnClicked"
+    textAlert="*Senha precisa de no mínimo 6 caracteres."
   />
 
   <v-alert
@@ -92,4 +99,5 @@
 </template>
 
 <style lang="css">
+
 </style>

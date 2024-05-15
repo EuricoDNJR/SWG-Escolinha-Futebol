@@ -4,7 +4,9 @@ const Login = () => import('../pages/Login.vue');
 const Menu = () => import('../pages/Menu.vue');
 const Inicio = () => import('../pages/Inicio.vue');
 const Matricular = () => import('../pages/Matricular.vue');
+const CadastrarResponsavel = () => import('../pages/CadastrarResponsavel.vue');
 const AreaAdministrativa = () => import('../pages/AreaAdministrativa.vue');
+const CadastrarUsuario = () => import('../pages/CadastrarUsuario.vue');
 
 const routes = [
   { 
@@ -28,9 +30,19 @@ const routes = [
         component: Matricular,
       },
       { 
+        path: 'cadastrar-responsavel', 
+        name: 'cadastrar-responsavel', 
+        component: CadastrarResponsavel,
+      },
+      { 
         path: 'area-administrativa', 
         name: 'area-administrativa', 
         component: AreaAdministrativa,
+      },
+      { 
+        path: 'area-administrativa/cadastrar-usuario', 
+        name: 'cadastrar-usuario', 
+        component: CadastrarUsuario,
       },
     ]
   },
