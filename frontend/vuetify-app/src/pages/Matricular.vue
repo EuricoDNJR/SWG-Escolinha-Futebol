@@ -12,8 +12,9 @@
     {nome: "Sim", valor: true},
     {nome: "Não", valor: false}
   ]);
+
   let equipes = [];
-  let responsaveis = [];
+  let responsaveis = ref([]);
   const loading = ref(true);
 
   const customBtns = ref([
@@ -58,8 +59,7 @@
         const responseJson = await response.json();
 
         if(response.status === 200){
-          responsaveis = responseJson;
-          console.log({...responsaveis[0]});
+          responsaveis.value = responseJson;
           loading.value = false;
         }
       }
@@ -111,10 +111,9 @@
       ['Especial.items', especialOpcoes],
       ['Especial.itemsTitle', 'nome'],
       ['Especial.itemsValue', 'valor'],
-
       ['Responsavel.items', responsaveis],
-      ['Especial.itemsTitle', 'nome'],
-      ['Especial.itemsValue', 'id'],
+      ['Responsavel.itemsTitle', 'nome'],
+      ['Responsavel.itemsValue', 'id'],
     ]"
     :customBtns="customBtns"
     @clicked="btnClicked"
