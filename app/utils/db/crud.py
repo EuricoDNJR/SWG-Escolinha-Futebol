@@ -29,3 +29,23 @@ def get_all_responsibles():
         ]
     else:
         return None
+    
+def get_all_teams():
+    teams = models.Team.select()
+
+    if teams.exists():
+        return [
+            {
+                "id": str(team.id),
+                "nome": team.nome,
+                "idade_minima": team.idade_minima,
+                "idade_maxima": team.idade_maxima,
+                "professor": team.professor.id,
+                "horario_inicio": team.horario_inicio,
+                "horario_fim": team.horario_fim,
+                "dias_semana": team.dias_semana
+            }
+            for team in teams
+        ]
+    else:
+        return None

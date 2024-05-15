@@ -82,7 +82,7 @@ async def get_all_responsible(jwt_token:str = Header(...)):
             return JSONResponse(status_code=status.HTTP_200_OK, content=responsibles)
         else:
             logging.info("No responsibles found")
-            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "No responsibles found"})
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "Nenhum responsavel encontrado"})
     
     except Exception as e:
         logging.error(e)

@@ -71,3 +71,27 @@ async def create_Team(team_data:SignUpTeamSchema, jwt_token:str = Header(...)):
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"message": "Erro ao criar a turma: " + str(e)})
+    
+@router.get('/all_teams', dependencies=[Depends(get_token_header)])
+async def get_all_teams(jwt_token:str = Header(...)):
+    """
+    Get all teams.
+    """
+
+    try:
+        logging.info("Getting all teams by user: " + jwt_token)
+
+        teams = crud.get_all_teams()
+
+        if teams is not None:
+            logging.info("Teams found successfully")
+            return JSONResponse(status_code=status.HTTP_200_OK, content=teams)
+        else:
+            logging.info("No teams found")
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "Nenhuma turma encontrada"})
+    
+    except Exception as e:
+        logging.error(e)
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"message": "Erro ao buscar as turmas: " + str(e)})
