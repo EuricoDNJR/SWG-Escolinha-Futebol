@@ -9,13 +9,15 @@
   const authStore = useAuthStore();
 
   const especialOpcoes = ref([
-    {nome: "Sim", valor: true},
-    {nome: "Não", valor: false}
+    {nome: "Sim", valor: "true"},
+    {nome: "Não", valor: "false"}
   ]);
-
-  let equipes = [];
+  let equipes = ref([]);
   let responsaveis = ref([]);
-  const loading = ref(true);
+  const loading = reactive({
+    equipes: true,
+    responsaveis: true
+  });
 
   const customBtns = ref([
     {text: 'Voltar', variant: 'text', icon: undefined, color: undefined, clickEvent: 'voltar', needFormData: false, loading: false},
@@ -49,6 +51,25 @@
     }   
   }
 
+  async function requestAllEquipes(){
+    try{
+      const url = "http://127.0.0.1:8003/v1/all_teams/";
+      const token = authStore.getToken;
+      
+      const response = await fetchGet(url, token);
+      if(response.status != 204){
+        const responseJson = await response.json();
+
+        if(response.status === 200){
+          equipes.value = responseJson;
+          loading.equipes = false;
+        }
+      }
+    }catch(e){
+      console.log(e);
+    }
+  }
+
   async function requestAllResponsaveis(){
     try{
       const url = "http://127.0.0.1:8003/v1/all_responsible/";
@@ -60,7 +81,7 @@
 
         if(response.status === 200){
           responsaveis.value = responseJson;
-          loading.value = false;
+          loading.responsaveis = false; 
         }
       }
     }catch(e){
@@ -73,20 +94,26 @@
     btn.loading = true;
 
     try{
-        const url = "http://127.0.0.1:8003/v1/student/";
-        const token = authStore.getToken;
-        console.log(body);
-        const response = await fetchPost(url, body, token);
-        const responseJson = await response.json();
+      if(body.especial == "true"){
+        body.especial = true;
+      }else{
+        body.especial = false;
+      }
 
-        if(response.status === 201){       
-          printMessage("Matrícula realizada com sucesso", "success");
-        }else{
-          printMessage("Erro ao realizar matrícula", "warning");
-        }
+      const url = "http://127.0.0.1:8003/v1/student/";
+      const token = authStore.getToken;
+      console.log(body);
+      const response = await fetchPost(url, body, token);
+      const responseJson = await response.json();
+
+      if(response.status === 201){       
+        printMessage("Matrícula realizada com sucesso", "success");
+      }else{
+        printMessage("Erro ao realizar matrícula", "warning");
+      }
     }catch(e){
-        console.log(e);
-        printMessage("Falha ao realizar matrícula", "warning");
+      console.log(e);
+      printMessage("Falha ao realizar matrícula", "warning");
     }        
 
     btn.loading = false;
@@ -94,11 +121,12 @@
     
   onMounted(() => {
     requestAllResponsaveis();
+    requestAllEquipes();
   });
 </script>
 
 <template>
-  <PageForm v-if="!loading"
+  <PageForm v-if="!loading.equipes && !loading.responsaveis"
     title="Matricular Aluno"
     :configs="[
       [createCelula({key:'nome', title:'Nome', required:true}), createCelula({key:'idade', title:'Idade', type:'number', required:true})],
@@ -111,6 +139,9 @@
       ['Especial.items', especialOpcoes],
       ['Especial.itemsTitle', 'nome'],
       ['Especial.itemsValue', 'valor'],
+      ['Equipe.items', equipes],
+      ['Equipe.itemsTitle', 'nome'],
+      ['Equipe.itemsValue', 'id'],
       ['Responsavel.items', responsaveis],
       ['Responsavel.itemsTitle', 'nome'],
       ['Responsavel.itemsValue', 'id'],
