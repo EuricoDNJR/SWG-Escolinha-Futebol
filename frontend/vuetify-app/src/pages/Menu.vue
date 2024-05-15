@@ -35,53 +35,17 @@
     </v-app-bar>
   </div>
 
-  <div class="main">
-    <v-btn class="btn font-weight-bold"
-      prepend-icon="mdi-account-plus-outline"
-      stacked
-    >
-      Matricular
-    </v-btn>
-
-    <v-btn class="btn font-weight-bold"
-      prepend-icon="mdi-credit-card-outline"
-      stacked
-    >
-      Pagamentos
-    </v-btn>
-
-    <v-btn class="btn font-weight-bold"
-      prepend-icon="mdi-account-multiple-outline"
-      stacked
-    >
-      Área Administrativa
-    </v-btn>
-
-    <v-btn class="btn font-weight-bold"
-      prepend-icon="mdi-view-dashboard-outline"
-      stacked
-    >
-      Dashboard
-    </v-btn>
+  <div class="router-view">
+    <router-view/>
   </div>
 </template>
 
 <style>
-
-
 .logo-farp{
   height: 90%;
 }
 
-.main{
-  display: flex;
-  flex-direction: column;
-  background-color: #F5F5F5;
+.router-view{
   height: 100%;
-  padding: 20px;
-}
-
-.btn{
-  margin-bottom: 10px;
 }
 </style>

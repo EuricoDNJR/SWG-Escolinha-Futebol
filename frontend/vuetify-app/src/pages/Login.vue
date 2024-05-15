@@ -86,9 +86,7 @@
     if(userData){
       authStore.successfulLogin({...userData});
 
-      router.push('/tela-inicial');
-
-      console.log("User TOKEN: " + authStore.getToken + "           index.vue in handleLogin function");
+      router.push('/menu/inicio/');
     } 
   }
 </script>

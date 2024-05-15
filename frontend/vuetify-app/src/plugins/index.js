@@ -7,7 +7,7 @@
 // Plugins
 import vuetify from './vuetify'
 import pinia from './pinia'
-import router from '@/router'
+import router from './router'
 
 export function registerPlugins (app) {
   app
