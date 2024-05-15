@@ -11,3 +11,21 @@ def create_team(nome: str, idade_minima: int, idade_maxima: int, professor: str,
 
 def create_student(nome: str, idade: int, cpf: str, contato: str, data_nascimento: str, email: str, especial: bool, time: str, situacao: str, responsavel: str):
     return models.Student.create(nome=nome, idade=idade, cpf=cpf, contato=contato, data_nascimento=data_nascimento, email=email, especial=especial, time=time, situacao=situacao, responsavel=responsavel)
+
+def get_all_responsibles():
+    responsibles = models.Responsible.select()
+
+    if responsibles.exists():
+        return [
+            {
+                "id": str(responsible.id),
+                "nome": responsible.nome,
+                "cpf": responsible.cpf,
+                "contato": responsible.contato,
+                "data_nascimento": str(responsible.data_nascimento),
+                "email": responsible.email if responsible.email is not None else None
+            }
+            for responsible in responsibles
+        ]
+    else:
+        return None
