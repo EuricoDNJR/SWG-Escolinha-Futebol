@@ -65,3 +65,27 @@ async def create_responsible_account(responsible_data:SignUpResponsibleSchema, j
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"message": "Erro ao criar o responsavel: " + str(e)})
+    
+@router.get('/all_responsible', dependencies=[Depends(get_token_header)])
+async def get_all_responsible(jwt_token:str = Header(...)):
+    """
+    Get all responsibles.
+    """
+
+    try:
+        logging.info("Getting all responsibles by user: " + jwt_token)
+
+        responsibles = crud.get_all_responsibles()
+
+        if responsibles is not None:
+            logging.info("Responsibles found successfully")
+            return JSONResponse(status_code=status.HTTP_200_OK, content=responsibles)
+        else:
+            logging.info("No responsibles found")
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "No responsibles found"})
+    
+    except Exception as e:
+        logging.error(e)
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"message": "Erro ao buscar os responsaveis: " + str(e)})
