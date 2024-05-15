@@ -19,7 +19,7 @@
   ]);
 
   const eventFunctions = {
-    voltar: () => router.push('/menu/inicio/'),
+    voltar: () => router.push('/menu/area-administrativa/'),
     cadastrar: (body) => requestCadastrarUsuario(body),
   };
 
