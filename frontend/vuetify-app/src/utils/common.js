@@ -64,7 +64,7 @@ export function fetchPost(url, body, token=undefined){
     const contentType = 'application/json';
 
     const options = createFetchOptions(methodName, contentType, token, body);
-    console.log(options);
+
     return fetch(url, options);
 }
 
