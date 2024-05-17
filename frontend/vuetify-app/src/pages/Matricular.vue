@@ -14,10 +14,7 @@
   ]);
   let equipes = ref([]);
   let responsaveis = ref([]);
-  const loading = reactive({
-    equipes: true,
-    responsaveis: true
-  });
+  const reload = ref(true);
 
   const customBtns = ref([
     {text: 'Voltar', variant: 'text', icon: undefined, color: undefined, clickEvent: 'voltar', needFormData: false, loading: false},
@@ -62,7 +59,7 @@
 
         if(response.status === 200){
           equipes.value = responseJson;
-          loading.equipes = false;
+          reload.value = !reload.value; 
         }
       }
     }catch(e){
@@ -81,7 +78,7 @@
 
         if(response.status === 200){
           responsaveis.value = responseJson;
-          loading.responsaveis = false; 
+          reload.value = !reload.value; 
         }
       }
     }catch(e){
@@ -102,7 +99,7 @@
 
       const url = "http://127.0.0.1:8003/v1/student/";
       const token = authStore.getToken;
-      console.log(body);
+
       const response = await fetchPost(url, body, token);
       const responseJson = await response.json();
 
@@ -126,7 +123,7 @@
 </script>
 
 <template>
-  <PageForm v-if="!loading.equipes && !loading.responsaveis"
+  <PageForm :key="reload"
     title="Matricular Aluno"
     :configs="[
       [createCelula({key:'nome', title:'Nome', required:true}), createCelula({key:'idade', title:'Idade', type:'number', required:true})],
