@@ -1,6 +1,5 @@
 import logging
 import datetime
-
 from pytz import timezone
 
 from.firebase_connector import initialize_firebase

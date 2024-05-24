@@ -4,7 +4,7 @@ import dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers.v1 import teams, users, responsibles, students
+from .routers.v1 import teams, users, responsibles, students, payments
 
 from .utils.helper import logging
 
@@ -75,6 +75,12 @@ app.include_router(
     responses=response_404,
 )
 
+app.include_router(
+    payments.router,
+    prefix=f"/{route_version}",
+    tags=["payments"],
+    responses=response_404,
+)
 @app.get(
     "/",
     responses={
