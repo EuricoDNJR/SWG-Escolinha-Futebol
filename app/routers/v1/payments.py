@@ -6,7 +6,6 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from ...dependencies import get_token_header
 from ...utils.db import crud
 from ...utils.helper import logging
-from ...utils.file_writer import save_file
 from fastapi import (
     APIRouter,
     status,
