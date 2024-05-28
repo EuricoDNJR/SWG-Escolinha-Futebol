@@ -1,5 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router';
 
+
 const Login = () => import('../pages/Login.vue');
 const Menu = () => import('../pages/Menu.vue');
 const Inicio = () => import('../pages/Inicio.vue');
@@ -11,38 +12,49 @@ const CadastrarUsuario = () => import('../pages/CadastrarUsuario.vue');
 const routes = [
   { 
     path: '/', 
+    redirect: { name: 'login' },
+  },
+  { 
+    path: '/login', 
     name: 'login', 
     component: Login,
+    meta: { requiresAuth: false },
   },
   { 
     path: '/menu', 
     name: 'menu', 
     component: Menu,
+    meta: { requiresAuth: true },
     children: [
       { 
         path: 'inicio', 
         name: 'inicio', 
         component: Inicio,
+        meta: { requiresAuth: true },
       },
       { 
         path: 'matricular', 
         name: 'matricular', 
         component: Matricular,
+        meta: { requiresAuth: true },
       },
       { 
         path: 'cadastrar-responsavel', 
         name: 'cadastrar-responsavel', 
         component: CadastrarResponsavel,
+        meta: { requiresAuth: true },
       },
       { 
         path: 'area-administrativa', 
         name: 'area-administrativa', 
         component: AreaAdministrativa,
+        meta: { requiresAuth: true },
       },
       { 
         path: 'area-administrativa/cadastrar-usuario', 
         name: 'cadastrar-usuario', 
         component: CadastrarUsuario,
+        meta: { requiresAuth: true },
       },
     ]
   },
