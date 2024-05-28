@@ -78,7 +78,7 @@ async def create_an_account(user_data:SignUpSchema, jwt_token:str = Header(...))
     except Exception as e:
         raise HTTPException(
             status_code=400,
-            detail= f"Error creating account for email {email}"
+            detail= f"Error creating account for email {email} {e}"
         )
 
 
