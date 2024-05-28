@@ -29,7 +29,7 @@ class SignUpResponsibleSchema(BaseModel):
     email: Optional[str]
 
 
-@router.post('/responsible', dependencies=[Depends(get_token_header)])
+@router.post('/responsible/', dependencies=[Depends(get_token_header)])
 async def create_responsible_account(responsible_data:SignUpResponsibleSchema, jwt_token:str = Header(...)):
     """
     Create an account for the responsible.
@@ -65,8 +65,32 @@ async def create_responsible_account(responsible_data:SignUpResponsibleSchema, j
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"message": "Erro ao criar o responsavel: " + str(e)})
+
+@router.get('/responsible_by_id/{id}', dependencies=[Depends(get_token_header)])
+async def get_responsible_by_id(id:str, jwt_token:str = Header(...)):
+    """
+    Get responsible by id.
+    """
+
+    try:
+        logging.info("Getting responsible by user: " + jwt_token)
+
+        responsible = crud.get_responsible_by_id(id)
+
+        if responsible is not None:
+            logging.info("Responsible found successfully")
+            return JSONResponse(status_code=status.HTTP_200_OK, content=responsible)
+        else:
+            logging.info("No responsible found")
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "Nenhum responsavel encontrado"})
     
-@router.get('/all_responsible', dependencies=[Depends(get_token_header)])
+    except Exception as e:
+        logging.error(e)
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"message": "Erro ao buscar o responsavel: " + str(e)})
+   
+@router.get('/all_responsible/', dependencies=[Depends(get_token_header)])
 async def get_all_responsible(jwt_token:str = Header(...)):
     """
     Get all responsibles.
@@ -89,3 +113,48 @@ async def get_all_responsible(jwt_token:str = Header(...)):
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"message": "Erro ao buscar os responsaveis: " + str(e)})
+
+class UpdateResponsibleSchema(BaseModel):
+    nome:Optional[str] = None
+    cpf:Optional[str] = None
+    contato:Optional[str] = None
+    data_nascimento:Optional[str] = None 
+    email: Optional[str] = None
+@router.patch('/update_responsible/{id}', dependencies=[Depends(get_token_header)])
+async def update_responsible(id:str, responsible_data: UpdateResponsibleSchema, jwt_token:str = Header(...)):
+    """
+    Update responsible by id.
+    E.g:
+
+        {
+            "nome": "João",
+            "cpf": "12345678901",
+            "contato": "123456789",
+            "data_nascimento": "1999-01-01",
+            "email": "exemplo@gmail.com"
+        }
+    
+    """
+    
+    try:
+        logging.info("Updating responsible by user: " + jwt_token)
+
+        responsible = crud.update_responsible(
+            id = id,
+            nome = responsible_data.nome,
+            cpf = responsible_data.cpf,
+            contato = responsible_data.contato,
+            data_nascimento = responsible_data.data_nascimento,
+            email = responsible_data.email
+        )
+
+        if responsible is None:
+            logging.info("No responsible found")
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "Nenhum responsavel encontrado"})
+        logging.info("Responsible updated successfully")
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Responsavel atualizado com sucesso"})
+    except Exception as e:
+        logging.error(e)
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"message": "Erro ao atualizar o responsavel: " + str(e)})

@@ -21,12 +21,13 @@ class SignUpSchema(BaseModel):
     email:str
     password:str
     cargo:str
+    nome:str
 
 class LoginSchema(BaseModel):
     email:str
     password:str
 
-@router.post('/signup', dependencies=[Depends(get_token_header)])
+@router.post('/signup/', dependencies=[Depends(get_token_header)])
 async def create_an_account(user_data:SignUpSchema, jwt_token:str = Header(...)):
     """
     Create an account for the user.
@@ -35,7 +36,8 @@ async def create_an_account(user_data:SignUpSchema, jwt_token:str = Header(...))
         {
             "email": "soumteste2@gmail.com",
             "password": "bombadorato1",
-            "cargo": "Professor"
+            "cargo": "Professor",
+            "nome": "João"
         }
 
     """
@@ -61,7 +63,7 @@ async def create_an_account(user_data:SignUpSchema, jwt_token:str = Header(...))
         logging.info(f"Firebase JWT Token decoded")
 
         logging.info("Inserting user into database")
-        user = crud.create_user(firebaseId=user.uid, firebaseIdWhoCreated=decoded_token["uid"], email=user.email, cargo=cargo)
+        user = crud.create_user(firebaseId=user.uid, firebaseIdWhoCreated=decoded_token["uid"], email=user.email, cargo=cargo, nome=user_data.nome)
         logging.info("User inserted into database")
     
         return JSONResponse(content={"message" : f"User account created successfuly for user {user.id}"},

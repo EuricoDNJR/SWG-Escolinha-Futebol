@@ -9,6 +9,7 @@ from app.utils.db.database import BaseModel
 
 class User(BaseModel):
     id = TextField(primary_key=True, default=uuid.uuid4)
+    nome = TextField(column_name="nome", null=False)
     firebaseId = TextField(unique=True, column_name="firebaseId", null=False)
     createdAt = DateTimeField(column_name="createdAt")
     firebaseIdWhoCreated = TextField(column_name="firebaseIdWhoCreated", null=False)
