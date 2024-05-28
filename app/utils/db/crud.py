@@ -6,8 +6,8 @@ from . import models
 from ...utils.helper import logging
 
 
-def create_user(firebaseId: str, firebaseIdWhoCreated: str, email: str, cargo: str):
-    return models.User.create(firebaseId=firebaseId, firebaseIdWhoCreated=firebaseIdWhoCreated, email=email, cargo=cargo)
+def create_user(firebaseId: str, firebaseIdWhoCreated: str, email: str, cargo: str, nome: str):
+    return models.User.create(firebaseId=firebaseId, firebaseIdWhoCreated=firebaseIdWhoCreated, email=email, cargo=cargo, nome=nome)
 
 def create_responsible(nome: str, cpf: str, contato: str, data_nascimento: str, email: str):
     return models.Responsible.create(nome=nome, cpf=cpf, contato=contato, data_nascimento=data_nascimento, email=email)
@@ -122,6 +122,29 @@ def get_all_payments_with_pagination(offset: int, limit: int) -> List[dict]:
         logging.error("Error getting payments with pagination: " + str(e))
         return []
 
+def get_all_students_with_pagination(offset: int, limit: int) -> List[dict]:
+    try:
+        students = models.Student.select().offset(offset).limit(limit)
+        return [
+            {
+                "id": str(student.id),
+                "nome": student.nome,
+                "idade": student.idade,
+                "cpf": student.cpf,
+                "contato": student.contato,
+                "data_nascimento": str(student.data_nascimento),
+                "email": student.email if student.email is not None else None,
+                "especial": student.especial,
+                "equipe": student.time.nome,
+                "situacao": student.situacao,
+                "responsavel": student.responsavel.nome
+            }
+            for student in students
+        ]
+    except Exception as e:
+        logging.error("Error getting students with pagination: " + str(e))
+        return []
+
 def count_all_payments() -> int:
     try:
         return models.Payment.select().count()
@@ -129,11 +152,47 @@ def count_all_payments() -> int:
         logging.error("Error counting payments: " + str(e))
         return 0
 
+def count_all_students() -> int:
+    try:
+        return models.Student.select().count()
+    except Exception as e:
+        logging.error("Error counting students: " + str(e))
+        return 0
+
 def find_first_payment_not_paid(student_id: str):
     try:
         return models.Payment.select().where(models.Payment.aluno == student_id, models.Payment.status == "Pendente").order_by(models.Payment.data_vencimento).first()
     except Exception as e:
         logging.error("Error finding first payment not paid: " + str(e))
+        return None
+
+def update_student(id: str, nome=None, idade=None, cpf=None, contato=None, data_nascimento=None, email=None, especial=False, time=None, situacao=None, responsavel=None):
+    try:
+        student = models.Student.get(models.Student.id == id)
+        if nome is not None:
+            student.nome = nome
+        if idade is not None:
+            student.idade = idade
+        if cpf is not None:
+            student.cpf = cpf
+        if contato is not None:
+            student.contato = contato
+        if data_nascimento is not None:
+            student.data_nascimento = data_nascimento
+        if email is not None:
+            student.email = email
+        if especial is not None:
+            student.especial = especial
+        if time is not None:
+            student.time = time
+        if situacao is not None:
+            student.situacao = situacao
+        if responsavel is not None:
+            student.responsavel = responsavel
+        student.save()
+        return True
+    except Exception as e:
+        logging.error("Error updating student: " + str(e))
         return None
     
 def update_payment_status(pagamento_id: str, comprovante_id: str):
@@ -147,6 +206,63 @@ def update_payment_status(pagamento_id: str, comprovante_id: str):
         return True
     except Exception as e:
         logging.error("Error updating payment status: " + str(e))
+        return None
+
+def update_responsible(id: str, nome=None, cpf=None, contato=None, data_nascimento=None, email=None):
+    try:
+        responsible = models.Responsible.get(models.Responsible.id == id)
+        if nome is not None:
+            responsible.nome = nome
+        if cpf is not None:
+            responsible.cpf = cpf
+        if contato is not None:
+            responsible.contato = contato
+        if data_nascimento is not None:
+            responsible.data_nascimento = data_nascimento
+        if email is not None:
+            responsible.email = email
+        responsible.save()
+        return True
+    except Exception as e:
+        logging.error("Error updating responsible: " + str(e))
+        return None
+
+def update_team(id: str, nome=None, idade_minima=None, idade_maxima=None, professor=None, horario_inicio=None, horario_fim=None, dias_semana=None):
+    try:
+        team = models.Team.get(models.Team.id == id)
+        if nome is not None:
+            team.nome = nome
+        if idade_minima is not None:
+            team.idade_minima = idade_minima
+        if idade_maxima is not None:
+            team.idade_maxima = idade_maxima
+        if professor is not None:
+            team.professor = professor
+        if horario_inicio is not None:
+            team.horario_inicio = horario_inicio
+        if horario_fim is not None:
+            team.horario_fim = horario_fim
+        if dias_semana is not None:
+            team.dias_semana = dias_semana
+        team.save()
+        return True
+    except Exception as e:
+        logging.error("Error updating team: " + str(e))
+        return None
+    
+def get_responsible_by_id(responsible_id: str):
+    try:
+        responsible = models.Responsible.get(models.Responsible.id == responsible_id)
+        return {
+            "id": str(responsible.id),
+            "nome": responsible.nome,
+            "cpf": responsible.cpf,
+            "contato": responsible.contato,
+            "data_nascimento": str(responsible.data_nascimento),
+            "email": responsible.email if responsible.email is not None else None
+        }
+    except Exception as e:
+        logging.error("Error getting responsible by id: " + str(e))
         return None
     
 def get_payment_by_id(pagamento_id: str):
@@ -164,4 +280,41 @@ def get_payment_by_id(pagamento_id: str):
         }
     except Exception as e:
         logging.error("Error getting payment by id: " + str(e))
+        return None
+
+def get_student_by_id(student_id: str):
+    try:
+        student = models.Student.get(models.Student.id == student_id)
+        return {
+            "id": str(student.id),
+            "nome": student.nome,
+            "idade": student.idade,
+            "cpf": student.cpf,
+            "contato": student.contato,
+            "data_nascimento": str(student.data_nascimento),
+            "email": student.email if student.email is not None else None,
+            "especial": student.especial,
+            "equipe": student.time.nome,
+            "situacao": student.situacao,
+            "responsavel": student.responsavel.nome
+        }
+    except Exception as e:
+        logging.error("Error getting student by id: " + str(e))
+        return None
+
+def get_team_by_id(team_id: str):
+    try:
+        team = models.Team.get(models.Team.id == team_id)
+        return {
+            "id": str(team.id),
+            "nome": team.nome,
+            "idade_minima": team.idade_minima,
+            "idade_maxima": team.idade_maxima,
+            "professor": team.professor.nome,
+            "horario_inicio": team.horario_inicio,
+            "horario_fim": team.horario_fim,
+            "dias_semana": team.dias_semana
+        }
+    except Exception as e:
+        logging.error("Error getting team by id: " + str(e))
         return None
