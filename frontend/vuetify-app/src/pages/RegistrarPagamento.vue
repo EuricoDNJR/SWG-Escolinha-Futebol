@@ -9,6 +9,7 @@
   const authStore = useAuthStore();
 
   const alunos = ref([]);
+  const reload = ref(true);
 
   const customBtns = ref([
     {text: 'Voltar', variant: 'text', icon: undefined, color: undefined, clickEvent: 'voltar', needFormData: false, loading: false},
@@ -44,7 +45,7 @@
   
   async function requestAllStudents(){
     try{
-      const url = `http://127.0.0.1:8003/v1/all_responsible/list_all_students/?page=${1}&page_size=${100}`;
+      const url = `http://127.0.0.1:8003/v1/list_all_students/?page=${1}&page_size=${100}`;
       const token = authStore.getToken;
       
       const response = await fetchGet(url, token);
@@ -53,8 +54,7 @@
         const responseJson = await response.json();
 
         if(response.status === 200){
-          console.log(responseJson);
-          alunos.value = responseJson;
+          alunos.value = responseJson.students;
           reload.value = !reload.value; 
         }
       }
@@ -95,7 +95,7 @@
 </script>
 
 <template>
-  <PageForm 
+  <PageForm :key="reload"
     title="Registrar Pagamento"
     :configs="[
       [createCelula({key:'id', title:'Aluno', type: 'autocomplete', required:true}),],
