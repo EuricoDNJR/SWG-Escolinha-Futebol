@@ -64,11 +64,11 @@
   }
 
   async function requestRegistrarPagamento(body){
-    const btn = customBtns.value.find((btn) => btn.clickEvent == "cadastrar");
+    const btn = customBtns.value.find((btn) => btn.clickEvent == "registrar");
     btn.loading = true;
 
     message.isVisible = false;
-
+    console.log(body);
     try{
         const url = "http://127.0.0.1:8003/v1/signup/";
         const token = authStore.getToken;
@@ -77,13 +77,13 @@
         const responseJson = await response.json();
         
         if(response.status === 201){       
-          printMessage("Cadastro realizado com sucesso", "success");
+          printMessage("Pagamento registrado com sucesso", "success");
         }else{
-          printMessage("Erro ao realizar cadastro", "warning");
+          printMessage("Erro ao registrar pagamento", "warning");
         }
     }catch(e){
         console.log(e);
-        printMessage("Falha ao realizar cadastro", "warning");
+        printMessage("Falha ao registrar pagamento", "warning");
     }        
 
     btn.loading = false;
@@ -99,7 +99,7 @@
     title="Registrar Pagamento"
     :configs="[
       [createCelula({key:'id', title:'Aluno', type: 'autocomplete', required:true}),],
-      [createCelula({key:'email', title:'Email', required:true}),],
+      [createCelula({key:'file', title:'Comprovante', type: 'file', required:true}),],
     ]"
     :fixies="[
       ['Aluno.items', alunos],

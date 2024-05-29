@@ -131,7 +131,10 @@
                             :readonly="field.readonly"
                             :variant="field.variant"
                         ></v-autocomplete>
-                        <v-file-input label="File input" v-if="field.type == 'file'">
+                        <v-file-input v-if="field.type == 'file'"
+                            :label="field.title"
+                            :error-messages="field.error ? ['Campo obrigatório.'] : []" 
+                        >
                         </v-file-input>
                     </div>
                 </v-col>
