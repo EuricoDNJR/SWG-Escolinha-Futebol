@@ -40,6 +40,42 @@ def generate_payments(valor: float, aluno: str):
         logging.error("Error generating payments: " + str(e))
         return None
 
+def get_all_users():
+    users = models.User.select()
+
+    if users.exists():
+        return [
+            {
+                "id": str(user.id),
+                "firebaseId": user.firebaseId,
+                "firebaseIdWhoCreated": user.firebaseIdWhoCreated,
+                "email": user.email,
+                "cargo": user.cargo,
+                "nome": user.nome
+            }
+            for user in users
+        ]
+    else:
+        return None
+
+def get_all_teachers():
+    teachers = models.User.select().where(models.User.cargo == "Professor")
+
+    if teachers.exists():
+        return [
+            {
+                "id": str(teacher.id),
+                "firebaseId": teacher.firebaseId,
+                "firebaseIdWhoCreated": teacher.firebaseIdWhoCreated,
+                "email": teacher.email,
+                "cargo": teacher.cargo,
+                "nome": teacher.nome
+            }
+            for teacher in teachers
+        ]
+    else:
+        return None
+        
 def get_all_responsibles():
     responsibles = models.Responsible.select()
 
@@ -166,6 +202,21 @@ def find_first_payment_not_paid(student_id: str):
         logging.error("Error finding first payment not paid: " + str(e))
         return None
 
+def update_user(id: str, email=None, cargo=None, nome=None):
+    try:
+        user = models.User.get(models.User.id == id)
+        if email is not None:
+            user.email = email
+        if cargo is not None:
+            user.cargo = cargo
+        if nome is not None:
+            user.nome = nome
+        user.save()
+        return True
+    except Exception as e:
+        logging.error("Error updating user: " + str(e))
+        return None
+
 def update_student(id: str, nome=None, idade=None, cpf=None, contato=None, data_nascimento=None, email=None, especial=False, time=None, situacao=None, responsavel=None):
     try:
         student = models.Student.get(models.Student.id == id)
@@ -249,7 +300,21 @@ def update_team(id: str, nome=None, idade_minima=None, idade_maxima=None, profes
     except Exception as e:
         logging.error("Error updating team: " + str(e))
         return None
-    
+
+def get_user_by_id(user_id: str):
+    try:
+        user = models.User.get(models.User.id == user_id)
+        return {
+            "id": str(user.id),
+            "firebaseId": user.firebaseId,
+            "firebaseIdWhoCreated": user.firebaseIdWhoCreated,
+            "email": user.email,
+            "cargo": user.cargo,
+            "nome": user.nome
+        }
+    except Exception as e:
+        logging.error("Error getting user by id: " + str(e))
+        return None    
 def get_responsible_by_id(responsible_id: str):
     try:
         responsible = models.Responsible.get(models.Responsible.id == responsible_id)
