@@ -54,6 +54,7 @@
       const token = authStore.getToken;
       
       const response = await fetchGet(url, token);
+      console.log(response);
       if(response.status != 204){
         const responseJson = await response.json();
 
@@ -73,6 +74,7 @@
       const token = authStore.getToken;
       
       const response = await fetchGet(url, token);
+      console.log(response);
       if(response.status != 204){
         const responseJson = await response.json();
 
@@ -89,6 +91,8 @@
   async function requestMatricularAluno(body){
     const btn = customBtns.value.find((btn) => btn.clickEvent == "matricular");
     btn.loading = true;
+
+    message.isVisible = false;
 
     try{
       if(body.especial == "true"){

@@ -49,6 +49,8 @@
     const btn = customBtns.value.find((btn) => btn.clickEvent == "cadastrar");
     btn.loading = true;
 
+    message.isVisible = false;
+
     try{
         const url = "http://127.0.0.1:8003/v1/signup/";
         const token = authStore.getToken;
@@ -75,8 +77,8 @@
   <PageForm 
     title="Cadastrar Usuário"
     :configs="[
-      [createCelula({key:'email', title:'Email', required:true}), createCelula({key:'password', title:'Senha', required:true})],
-      [createCelula({key:'cargo', title:'Cargo', type: 'select', required:true, initialValue: ''})],
+      [createCelula({key:'nome', title:'Nome', required:true}), createCelula({key:'password', title:'Senha', required:true})],
+      [createCelula({key:'email', title:'Email', required:true}), createCelula({key:'cargo', title:'Cargo', type: 'select', required:true, initialValue: ''})],
     ]"
     :fixies="[
       ['Cargo.items', cargos],
