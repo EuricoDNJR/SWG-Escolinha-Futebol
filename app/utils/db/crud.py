@@ -212,7 +212,14 @@ def update_user(id: str, email=None, cargo=None, nome=None):
         if nome is not None:
             user.nome = nome
         user.save()
-        return True
+        return {
+            "id": str(user.id),
+            "firebaseId": user.firebaseId,
+            "firebaseIdWhoCreated": user.firebaseIdWhoCreated,
+            "email": user.email,
+            "cargo": user.cargo,
+            "nome": user.nome
+        }
     except Exception as e:
         logging.error("Error updating user: " + str(e))
         return None
