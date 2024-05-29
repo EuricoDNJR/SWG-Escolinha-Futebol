@@ -8,17 +8,16 @@
   const router = useRouter();
   const authStore = useAuthStore();
 
-  const professores = ref([]);
-  const reload = ref(true);
+  const alunos = ref([]);
 
   const customBtns = ref([
     {text: 'Voltar', variant: 'text', icon: undefined, color: undefined, clickEvent: 'voltar', needFormData: false, loading: false},
-    {text: 'Cadastrar', variant: 'flat', icon: 'mdi-account-plus', color: 'green-darken-1', clickEvent: 'cadastrar', needFormData: true, loading: false},
+    {text: 'Registrar', variant: 'flat', icon: 'mdi-account-plus', color: 'green-darken-1', clickEvent: 'registrar', needFormData: true, loading: false},
   ]);
 
   const eventFunctions = {
-    voltar: () => router.push('/menu/area-administrativa/'),
-    cadastrar: (body) => requestCadastrarTurma(body),
+    voltar: () => router.push('/menu/pagamentos/'),
+    registrar: (body) => requestRegistrarPagamento(body),
   };
 
   const message = reactive({
@@ -42,10 +41,10 @@
       eventFunction();
     }   
   }
-
-  async function requestAllProfessores(){
+  
+  async function requestAllStudents(){
     try{
-      const url = "http://127.0.0.1:8003/v1/all_teachers/";
+      const url = `http://127.0.0.1:8003/v1/all_responsible/list_all_students/?page=${1}&page_size=${100}`;
       const token = authStore.getToken;
       
       const response = await fetchGet(url, token);
@@ -54,7 +53,8 @@
         const responseJson = await response.json();
 
         if(response.status === 200){
-          professores.value = responseJson;
+          console.log(responseJson);
+          alunos.value = responseJson;
           reload.value = !reload.value; 
         }
       }
@@ -63,19 +63,19 @@
     }
   }
 
-  async function requestCadastrarTurma(body){
+  async function requestRegistrarPagamento(body){
     const btn = customBtns.value.find((btn) => btn.clickEvent == "cadastrar");
     btn.loading = true;
-    
+
     message.isVisible = false;
 
     try{
-        const url = "http://127.0.0.1:8003/v1/team/";
+        const url = "http://127.0.0.1:8003/v1/signup/";
         const token = authStore.getToken;
         
         const response = await fetchPost(url, body, token);
         const responseJson = await response.json();
-
+        
         if(response.status === 201){       
           printMessage("Cadastro realizado com sucesso", "success");
         }else{
@@ -88,26 +88,23 @@
 
     btn.loading = false;
   }
-
-  onMounted(() => {
-    requestAllProfessores();
-  });
   
+  onMounted(() => {
+    requestAllStudents();
+  });
 </script>
 
 <template>
-  <PageForm :key="reload"
-    title="Cadastrar Turma"
+  <PageForm 
+    title="Registrar Pagamento"
     :configs="[
-      [createCelula({key:'nome', title:'Nome', required:true}), createCelula({key:'professor', title:'Professor', type: 'autocomplete', required:true}),],
-      [createCelula({key:'idade_minima', title:'Idade Mínima', type: 'number', required:true}), createCelula({key:'idade_maxima', title:'Idade Máxima', type: 'number', required:true})],
-      [createCelula({key:'horario_inicio', title:'Horário de Início', required:true}), createCelula({key:'horario_fim', title:'Horário de Término', required:true})],
-      [createCelula({key:'dias_semana', title:'Dias da Semana', required:true})],
+      [createCelula({key:'id', title:'Aluno', type: 'autocomplete', required:true}),],
+      [createCelula({key:'email', title:'Email', required:true}),],
     ]"
     :fixies="[
-      ['Professor.items', professores],
-      ['Professor.itemsTitle', 'nome'],
-      ['Professor.itemsValue', 'id'],
+      ['Aluno.items', alunos],
+      ['Aluno.itemsTitle', 'nome'],
+      ['Aluno.itemsValue', 'id'],
     ]"
     :customBtns="customBtns"
     @clicked="btnClicked"
@@ -124,4 +121,5 @@
 </template>
 
 <style lang="css">
+
 </style>

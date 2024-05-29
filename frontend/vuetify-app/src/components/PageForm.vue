@@ -131,6 +131,8 @@
                             :readonly="field.readonly"
                             :variant="field.variant"
                         ></v-autocomplete>
+                        <v-file-input label="File input" v-if="field.type == 'file'">
+                        </v-file-input>
                     </div>
                 </v-col>
             </v-row>
