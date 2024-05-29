@@ -2,6 +2,7 @@ import os
 import dotenv
 from fastapi import APIRouter, Depends, Header, HTTPException
 from pydantic import BaseModel
+from typing import Optional
 from fastapi.responses import JSONResponse
 from ...utils.helper import firebase
 from firebase_admin import auth
@@ -91,7 +92,7 @@ async def create_access_token(user_data:LoginSchema):
         E.g:
 
         {
-            "email": "soumteste2@gmail.com",
+            "email": "joaocesar@gmail.com",
             "password": "bombadorato1"
         }
 
@@ -124,3 +125,158 @@ async def validate_token(jwt_token:str = Header(...)):
     user = auth.verify_id_token(jwt_token)
 
     return user["uid"]
+
+@router.get('/all_users/', dependencies=[Depends(get_token_header)])
+async def get_all_users(jwt_token:str = Header(...)):
+
+    logging.info("Decoding firebase JWT token")
+    try:
+        if TEST != "ON":
+            decoded_token = auth.verify_id_token(jwt_token)
+
+        elif jwt_token != "test":
+            raise auth.InvalidIdTokenError("Invalid JWT token")
+
+        logging.info(f"Firebase JWT Token decoded")
+
+        logging.info("Getting all users from database")
+        users = crud.get_all_users()
+        
+        if users is not None:
+            logging.info("Users found successfully")
+            return JSONResponse(status_code=200, content=users)
+        else:
+            logging.error("No users found")
+            return JSONResponse(status_code=404, content={"message": "Nenhum usuario encontrado!"})
+    except Exception as e:
+        logging.error(e)
+        return JSONResponse(
+            status_code=500,
+            content={"message": "Erro ao buscar os usuarios: " + str(e)}
+        )
+
+@router.get('/all_teachers/', dependencies=[Depends(get_token_header)])
+async def get_all_teachers(jwt_token:str = Header(...)):
+
+    logging.info("Decoding firebase JWT token")
+    try:
+        if TEST != "ON":
+            decoded_token = auth.verify_id_token(jwt_token)
+
+        elif jwt_token != "test":
+            raise auth.InvalidIdTokenError("Invalid JWT token")
+
+        logging.info(f"Firebase JWT Token decoded")
+
+        logging.info("Getting all teachers from database")
+        teachers = crud.get_all_teachers()
+        
+        if teachers is not None:
+            logging.info("Teachers found successfully")
+            return JSONResponse(status_code=200, content=teachers)
+        else:
+            logging.error("No teachers found")
+            return JSONResponse(status_code=404, content={"message": "Nenhum professor encontrado!"})
+    except Exception as e:
+        logging.error(e)
+        return JSONResponse(
+            status_code=500,
+            content={"message": "Erro ao buscar os professores: " + str(e)}
+        )
+
+@router.get('/user_by_id/{id}', dependencies=[Depends(get_token_header)])
+async def get_user_by_id(id:str, jwt_token:str = Header(...)):
+
+    logging.info("Decoding firebase JWT token")
+    try:
+        if TEST != "ON":
+            decoded_token = auth.verify_id_token(jwt_token)
+
+        elif jwt_token != "test":
+            raise auth.InvalidIdTokenError("Invalid JWT token")
+
+        logging.info(f"Firebase JWT Token decoded")
+
+        logging.info("Getting user by id from database")
+        user = crud.get_user_by_id(id)
+        
+        if user is not None:
+            logging.info("User found successfully")
+            return JSONResponse(status_code=200, content=user)
+        else:
+            logging.error("No user found")
+            return JSONResponse(status_code=404, content={"message": "Nenhum usuario encontrado!"})
+    except Exception as e:
+        logging.error(e)
+        return JSONResponse(
+            status_code=500,
+            content={"message": "Erro ao buscar o usuario: " + str(e)}
+        )
+
+class UpdateUserSchema(BaseModel):
+    email: Optional[str] = None
+    password: Optional[str] = None
+    cargo: Optional[str] = None
+    nome: Optional[str] = None
+
+@router.patch('/update_user/{id}', dependencies=[Depends(get_token_header)])
+async def update_user(id: str, user_data: UpdateUserSchema, jwt_token: str = Header(...)):
+    """
+    Update user by id.
+
+    E.g:
+
+        {
+            "email": "troquei@gmail.com",
+            "password": "bombadorato1",
+            "cargo": "Professor",
+            "nome": "João"
+        }
+
+    """
+
+    logging.info("Decoding firebase JWT token")
+    try:
+        if TEST != "ON":
+            decoded_token = auth.verify_id_token(jwt_token)
+        elif jwt_token != "test":
+            raise auth.InvalidIdTokenError("Invalid JWT token")
+
+        logging.info(f"Firebase JWT Token decoded")
+
+        logging.info("Updating user in database")
+        user = crud.update_user(id=id, email=user_data.email, cargo=user_data.cargo, nome=user_data.nome)
+        print(user['firebaseId'])
+        # Update user in Firebase
+        if user_data.email or user_data.password:
+            update_data = {}
+            if user_data.email:
+                update_data['email'] = user_data.email
+            if user_data.password:
+                update_data['password'] = user_data.password
+            
+            logging.info("Updating user in Firebase")
+            auth.update_user(user['firebaseId'], **update_data)
+            logging.info("User updated in Firebase")
+        
+        if user is not None:
+            logging.info("User updated successfully")
+            return JSONResponse(status_code=200, content=user)
+        else:
+            logging.error("No user found")
+            return JSONResponse(status_code=404, content={"message": "Nenhum usuario encontrado!"})
+    except auth.EmailAlreadyExistsError as e:
+        logging.error(f"Firebase auth error: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao atualizar no Firebase: {e}")
+    except auth.UserNotFoundError as e:
+        logging.error(f"Firebase auth error: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao atualizar no Firebase: {e}")
+    except auth.InvalidIdTokenError as e:
+        logging.error(f"Firebase auth error: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao atualizar no Firebase: {e}")
+    except Exception as e:
+        logging.error(f"General error: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"message": "Erro ao atualizar o usuario: " + str(e)}
+        )
