@@ -6,13 +6,7 @@ from firebase_admin import credentials
 
 def initialize_firebase():
     if not firebase_admin._apps:
-        cred = credentials.Certificate(cert={
-                    "project_id": os.getenv("FIREBASE_PROJECT_ID"),
-                    "type": "service_account",
-                    "token_uri": "https://oauth2.googleapis.com/token",
-                    "client_email": os.getenv("FIREBASE_CLIENT_EMAIL"),
-                    "private_key": os.getenv("FIREBASE_PRIVATE_KEY"),
-                })
+        cred = credentials.Certificate(cert="firebase_cert_credentials.json")
         firebase_admin.initialize_app(cred)
 
 
