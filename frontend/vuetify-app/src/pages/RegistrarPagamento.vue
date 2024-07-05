@@ -1,6 +1,6 @@
 <script setup>
   import { ref, reactive, onMounted } from 'vue';
-  import { fetchPost, createCelula, fetchGet } from '../utils/common'
+  import { fetchPatchFile, createCelula, fetchGet } from '../utils/common'
   import { useAuthStore } from '../utils/store';
   import { useRouter } from 'vue-router';
   import PageForm from '../components/PageForm.vue'
@@ -68,15 +68,20 @@
     btn.loading = true;
 
     message.isVisible = false;
-    console.log(body);
+
     try{
-        const url = "http://127.0.0.1:8003/v1/signup/";
+        const url = `http://127.0.0.1:8003/v1/update_status/${body.id}`;
         const token = authStore.getToken;
+        let form = new FormData();
+
+        console.log(body.file);
+
+        form.append("file", body.file);
+
+        const response = await fetchPatchFile(url, form, token);
+        // const responseJson = await response.json();
         
-        const response = await fetchPost(url, body, token);
-        const responseJson = await response.json();
-        
-        if(response.status === 201){       
+        if(response.status === 200){       
           printMessage("Pagamento registrado com sucesso", "success");
         }else{
           printMessage("Erro ao registrar pagamento", "warning");
