@@ -2,10 +2,11 @@ import logging
 import datetime
 from pytz import timezone
 
-from.firebase_connector import initialize_firebase
-from .db.database import db
+from .firebase_connector import initialize_firebase
+from .db.database import db, reconnect_db
 
-defined_timezone = timezone('America/Sao_Paulo')
+defined_timezone = timezone("America/Sao_Paulo")
+
 
 # Classe de formatter personalizado
 class CustomFormatter(logging.Formatter):
@@ -16,7 +17,8 @@ class CustomFormatter(logging.Formatter):
             return dt.strftime(datefmt)
         else:
             return dt.isoformat()
-        
+
+
 logging.basicConfig(level=logging.INFO)
 
 # Obtendo o logger root
@@ -24,11 +26,19 @@ logger = logging.getLogger()
 
 # Configurando o formatter no handler padrão
 for handler in logger.handlers:
-    handler.setFormatter(CustomFormatter(fmt="%(asctime)s - %(levelname)s - %(message)s"))
+    handler.setFormatter(
+        CustomFormatter(fmt="%(asctime)s - %(levelname)s - %(message)s")
+    )
 
-logging.info("Starting RDS connection")
-database = db
-logging.info("RDS connection started")
+
+@reconnect_db
+def initialize_database():
+    logging.info("Starting RDS connection")
+    db.connect()
+    logging.info("RDS connection started")
+
+
+initialize_database()
 
 logging.info("Starting Firebase connection")
 firebase = initialize_firebase()
