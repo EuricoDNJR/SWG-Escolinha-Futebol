@@ -7,6 +7,9 @@ const Matricular = () => import('../pages/Matricular.vue');
 const CadastrarResponsavel = () => import('../pages/CadastrarResponsavel.vue');
 const AreaAdministrativa = () => import('../pages/AreaAdministrativa.vue');
 const CadastrarUsuario = () => import('../pages/CadastrarUsuario.vue');
+const CadastrarTurma = () => import('../pages/CadastrarTurma.vue');
+const Pagamentos = () => import('../pages/Pagamentos.vue'); 
+const RegistrarPagamento = () => import('../pages/RegistrarPagamento.vue'); 
 
 const routes = [
   { 
@@ -43,6 +46,21 @@ const routes = [
         path: 'area-administrativa/cadastrar-usuario', 
         name: 'cadastrar-usuario', 
         component: CadastrarUsuario,
+      },
+      { 
+        path: 'area-administrativa/cadastrar-turma', 
+        name: 'cadastrar-turma', 
+        component: CadastrarTurma,
+      },
+      { 
+        path: 'pagamentos', 
+        name: 'pagamentos', 
+        component: Pagamentos,
+      },
+      { 
+        path: 'pagamentos/registrar-pagamento', 
+        name: 'registrar-pagamento', 
+        component: RegistrarPagamento,
       },
     ]
   },

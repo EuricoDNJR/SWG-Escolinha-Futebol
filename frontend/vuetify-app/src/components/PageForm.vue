@@ -30,9 +30,13 @@
 
     function create(){
         const something = {};
-        
+
         for(let title in fieldsObj){
-            something[fieldsObj[title].key] = fieldsObj[title].obj.value.trim();
+            if(fieldsObj[title].type != "file"){
+                something[fieldsObj[title].key] = fieldsObj[title].obj.value.trim();
+            }else{
+                something[fieldsObj[title].key] = fieldsObj[title].obj.value;
+            }
         }
 
         return something;
@@ -131,6 +135,15 @@
                             :readonly="field.readonly"
                             :variant="field.variant"
                         ></v-autocomplete>
+                        <v-file-input v-if="field.type == 'file'"
+                            v-model="field.obj"
+                            :label="field.title"
+                            :error-messages="field.error ? ['Campo obrigatório.'] : []"
+                            hide-details="auto"
+                            show-size
+                            accept="image/*"
+                        >
+                        </v-file-input>
                     </div>
                 </v-col>
             </v-row>

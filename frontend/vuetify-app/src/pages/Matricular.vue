@@ -54,6 +54,7 @@
       const token = authStore.getToken;
       
       const response = await fetchGet(url, token);
+
       if(response.status != 204){
         const responseJson = await response.json();
 
@@ -73,6 +74,7 @@
       const token = authStore.getToken;
       
       const response = await fetchGet(url, token);
+
       if(response.status != 204){
         const responseJson = await response.json();
 
@@ -86,16 +88,40 @@
     }
   }
 
+  async function requestCriarPagamento(body){  
+    try{
+      const url = "http://127.0.0.1:8003/v1/payment_generate/";
+      const token = authStore.getToken;
+
+      await fetchPost(url, body, token);
+    }catch(e){
+      console.log(e);
+      printMessage("Falha ao criar pagamento", "warning");
+    }        
+  }
+
   async function requestMatricularAluno(body){
     const btn = customBtns.value.find((btn) => btn.clickEvent == "matricular");
     btn.loading = true;
 
+    message.isVisible = false;
+
     try{
+      body.situacao = "Ativo";
+      
       if(body.especial == "true"){
         body.especial = true;
       }else{
         body.especial = false;
       }
+
+      const bodyPayment = {
+        valor: undefined,
+        aluno: undefined,
+      }
+
+      bodyPayment.valor = body["valor"];
+      delete body["valor"];
 
       const url = "http://127.0.0.1:8003/v1/student/";
       const token = authStore.getToken;
@@ -103,7 +129,11 @@
       const response = await fetchPost(url, body, token);
       const responseJson = await response.json();
 
-      if(response.status === 201){       
+      if(response.status === 201){    
+        bodyPayment.aluno = responseJson.uuid; 
+
+        await requestCriarPagamento(bodyPayment);
+        
         printMessage("Matrícula realizada com sucesso", "success");
       }else{
         printMessage("Erro ao realizar matrícula", "warning");
@@ -130,7 +160,7 @@
       [createCelula({key:'cpf', title:'Cpf', required:true}), createCelula({key:'contato', title:'Telefone', required:true})],
       [createCelula({key:'data_nascimento', title:'Data de Nascimento', type: 'date', required:true}), createCelula({key:'email', title:'Email', required:true})],
       [createCelula({key:'especial', title:'Especial', type: 'select', required:true, initialValue: ''}), createCelula({key:'equipe', title:'Equipe', type: 'select', required:true, initialValue: ''})],
-      [createCelula({key:'situacao', title:'Situação',  required:true}), createCelula({key:'responsavel', title:'Responsavel', type: 'select', required:true, initialValue: ''})],
+      [createCelula({key:'valor', title:'Valor da Mensalidade', type: 'number',  required:true}), createCelula({key:'responsavel', title:'Responsavel', type: 'select', required:true, initialValue: ''})],
     ]"
     :fixies="[
       ['Especial.items', especialOpcoes],
