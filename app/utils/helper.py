@@ -3,7 +3,7 @@ import datetime
 from pytz import timezone
 
 from .firebase_connector import initialize_firebase
-from .db.database import db, reconnect_db
+from .db.database import db
 
 defined_timezone = timezone("America/Sao_Paulo")
 
@@ -29,16 +29,6 @@ for handler in logger.handlers:
     handler.setFormatter(
         CustomFormatter(fmt="%(asctime)s - %(levelname)s - %(message)s")
     )
-
-
-@reconnect_db
-def initialize_database():
-    logging.info("Starting RDS connection")
-    db.connect()
-    logging.info("RDS connection started")
-
-
-initialize_database()
 
 logging.info("Starting Firebase connection")
 firebase = initialize_firebase()

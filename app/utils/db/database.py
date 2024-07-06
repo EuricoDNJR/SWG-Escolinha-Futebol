@@ -1,8 +1,6 @@
 import os
-import time
 import dotenv
 from peewee import Model, PostgresqlDatabase
-from psycopg2 import OperationalError
 
 dotenv.load_dotenv()
 
@@ -30,24 +28,3 @@ class BaseModel(Model):
     class Meta:
         database = db
 
-
-def reconnect_db(func):
-    def wrapper(*args, **kwargs):
-        max_retries = 3
-        for attempt in range(max_retries):
-            try:
-                if db.is_closed():
-                    db.connect()
-                return func(*args, **kwargs)
-            except OperationalError as e:
-                if "SSL connection has been closed unexpectedly" in str(e):
-                    print("Connection closed unexpectedly. Reconnecting...")
-                    if not db.is_closed():
-                        db.close()
-                    time.sleep(2**attempt)
-                    db.connect()
-                else:
-                    raise
-        raise Exception("Max retries reached")
-
-    return wrapper
