@@ -11,6 +11,7 @@ const CadastrarUsuario = () => import('../pages/CadastrarUsuario.vue');
 const CadastrarTurma = () => import('../pages/CadastrarTurma.vue');
 const Pagamentos = () => import('../pages/Pagamentos.vue'); 
 const RegistrarPagamento = () => import('../pages/RegistrarPagamento.vue'); 
+const ListarPagamentos = () => import('../pages/ListarPagamentos.vue'); 
 
 const routes = [
   { 
@@ -73,6 +74,11 @@ const routes = [
         path: 'pagamentos/registrar-pagamento', 
         name: 'registrar-pagamento', 
         component: RegistrarPagamento,
+      },
+      { 
+        path: 'pagamentos/listar-pagamentos', 
+        name: 'listar-pagamentos', 
+        component: ListarPagamentos,
       },
     ]
   },

@@ -14,6 +14,7 @@
     <v-btn class="btn font-weight-bold"
       prepend-icon="mdi-plus-box-outline"
       stacked
+      to="/menu/pagamentos/listar-pagamentos/"
     >
       Listar Pagamentos
     </v-btn>
