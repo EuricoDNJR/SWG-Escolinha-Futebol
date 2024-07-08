@@ -139,8 +139,6 @@ async def lifespan(app: FastAPI):
     print("Scheduler desligado...")
     
     # Desliga o gerenciador de notificações
-    if notification_manager.is_running():
-        print("Desligando gerenciador de notificações...")
     notification_manager.stop()
     print("Gerenciador de notificações desligado.")
 app.router.lifespan_context = lifespan
