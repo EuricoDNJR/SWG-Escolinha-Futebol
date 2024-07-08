@@ -25,6 +25,7 @@
     <v-btn class="btn font-weight-bold"
       prepend-icon="mdi-credit-card-outline"
       stacked
+      to="/menu/pagamentos/"
     >
       Pagamentos
     </v-btn>

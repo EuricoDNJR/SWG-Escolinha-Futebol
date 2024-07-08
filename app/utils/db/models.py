@@ -9,6 +9,7 @@ from app.utils.db.database import BaseModel
 
 class User(BaseModel):
     id = TextField(primary_key=True, default=uuid.uuid4)
+    nome = TextField(column_name="nome", null=False)
     firebaseId = TextField(unique=True, column_name="firebaseId", null=False)
     createdAt = DateTimeField(column_name="createdAt")
     firebaseIdWhoCreated = TextField(column_name="firebaseIdWhoCreated", null=False)
@@ -56,3 +57,16 @@ class Student(BaseModel):
     responsavel = ForeignKeyField(Responsible, column_name="responsavel", backref="students")
     class Meta:
         table_name = "Student"
+
+class Payment(BaseModel):
+    id = TextField(primary_key=True, default=uuid.uuid4)
+    valor = FloatField(column_name="valor", null=False)
+    data_pagamento = DateField(column_name="data_pagamento", null=True)
+    data_vencimento = DateField(column_name="data_vencimento", null=False)
+    status = TextField(column_name="status", null=False)
+    comprovante = TextField(column_name="comprovante", null=True)
+    aluno = ForeignKeyField(Student, column_name="aluno", backref="payments")
+    parcela = IntegerField(column_name="parcela", null=False)
+
+    class Meta:
+        table_name = "Payment"

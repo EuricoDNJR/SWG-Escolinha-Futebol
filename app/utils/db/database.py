@@ -1,5 +1,4 @@
 import os
-
 import dotenv
 from peewee import Model, PostgresqlDatabase
 
@@ -20,7 +19,12 @@ db = PostgresqlDatabase(
     DATABASE_NAME,
     user=DATABASE_USER,
     password=DATABASE_PASS,
-    host=DATABASE_HOST,)
+    host=DATABASE_HOST,
+    port=DATABASE_PORT,
+)
+
+
 class BaseModel(Model):
     class Meta:
         database = db
+

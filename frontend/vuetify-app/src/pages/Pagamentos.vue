@@ -6,31 +6,16 @@
     <v-btn class="btn font-weight-bold"
       prepend-icon="mdi-account-plus-outline"
       stacked
-      to="/menu/area-administrativa/cadastrar-usuario/"
+      to="/menu/pagamentos/registrar-pagamento/"
     >
-      Cadastrar Usuário 
+      Registrar Pagamento
     </v-btn>
 
     <v-btn class="btn font-weight-bold"
       prepend-icon="mdi-plus-box-outline"
       stacked
-      to="/menu/area-administrativa/cadastrar-turma/"
     >
-      Cadastrar Turma
-    </v-btn>
-
-    <v-btn class="btn font-weight-bold"
-      prepend-icon="mdi-list-box-outline"
-      stacked
-    >
-      Listar Alunos
-    </v-btn>
-
-    <v-btn class="btn font-weight-bold"
-      prepend-icon="mdi-list-box-outline"
-      stacked
-    >
-      Listar Turmas
+      Listar Pagamentos
     </v-btn>
 
     <v-btn class="btn font-weight-bold"
@@ -45,7 +30,6 @@
 </template>
 
 <style>
-
 .main{
   display: flex;
   flex-direction: column;

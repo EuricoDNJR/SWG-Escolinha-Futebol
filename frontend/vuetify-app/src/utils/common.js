@@ -77,6 +77,20 @@ export function fetchPatch(url, body, token=undefined){
     return fetch(url, options);
 }
 
+export function fetchPatchFile(url, body, token=undefined){
+    // const contentType = 'multipart/form-data';
+
+    const options = {
+        method: 'PATCH',
+        headers: {
+            "jwt-token": token,
+        },
+        body: body
+    }
+
+    return fetch(url, options);
+}
+
 export function fetchDelete(url, token=undefined){
     const methodName = 'DELETE';
     const contentType = 'application/json';
@@ -147,7 +161,7 @@ export function exist(value){
 export function emptyStringToNull(string){
     let newValue = null;
 
-    if(string.length > 0){
+    if(string.length > 0 || string.length == undefined){ // Segunda condição se não for string, futuramente pode dar mt erro isso aqui
         newValue = string;
     }
 
