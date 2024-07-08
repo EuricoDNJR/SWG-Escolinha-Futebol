@@ -31,7 +31,6 @@ class SignUpStudentSchema(BaseModel):
     email: Optional[str]
     especial: Optional[bool] = False
     equipe: str
-    situacao: Optional[str]
     responsavel: str
 
 
@@ -50,7 +49,6 @@ async def create_student_account(student_data:SignUpStudentSchema, jwt_token:str
             "email": "joazin@gmail.com",
             "especial": false,
             "equipe": "02bcca12-6f62-4671-84bb-141ee3a67e9d",
-            "situacao": "Ativo",
             "responsavel": "24ac5412-af03-4ea0-9fb4-643ed93c9b8d"
         }
 
@@ -68,7 +66,6 @@ async def create_student_account(student_data:SignUpStudentSchema, jwt_token:str
             email = student_data.email,
             especial = student_data.especial,
             time = student_data.equipe,
-            situacao = student_data.situacao,
             responsavel = student_data.responsavel
         )
 

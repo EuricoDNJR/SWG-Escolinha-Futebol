@@ -5,12 +5,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from peewee import OperationalError
 from contextlib import asynccontextmanager
-from .routers.v1 import teams, users, responsibles, students, payments
+
+from .routers.v1 import teams, users, responsibles, students, payments, notifications
 from .utils.helper import logging, db as database
+from .utils.notification_manager import notification_manager
 
 dotenv.load_dotenv()
 
 ENV = os.getenv("ENV")
+EMAIL_NOTIFICATIONS = os.getenv("EMAIL_NOTIFICATIONS")
 
 api_version = "v0.1.0"
 route_version = "v1"
@@ -81,6 +84,13 @@ app.include_router(
     responses=response_404,
 )
 
+app.include_router(
+    notifications.router,
+    prefix=f"/{route_version}",
+    tags=["notifications"],
+    responses=response_404,
+)
+
 @app.get(
     "/",
     responses={
@@ -117,10 +127,20 @@ async def lifespan(app: FastAPI):
     scheduler.start()
     print("Scheduler iniciado...")
     
+    # Inicializa o gerenciador de notificações de acordo com a variável de ambiente
+    if EMAIL_NOTIFICATIONS == "ON":
+        print("Iniciando gerenciador de notificações...")
+        notification_manager.start()
+    
     yield
     
     print("Encerrando lifespan context...")
     scheduler.shutdown()
     print("Scheduler desligado...")
-
+    
+    # Desliga o gerenciador de notificações
+    if notification_manager.is_running():
+        print("Desligando gerenciador de notificações...")
+    notification_manager.stop()
+    print("Gerenciador de notificações desligado.")
 app.router.lifespan_context = lifespan
