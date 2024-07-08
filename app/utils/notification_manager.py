@@ -21,4 +21,9 @@ class NotificationManager:
             self.scheduler.shutdown()
             print("Notification manager stopped...")
 
+    def update_schedule(self, hour: int, minute: int):
+        if self.job:
+            self.job.reschedule(trigger=CronTrigger(hour=hour, minute=minute))
+            print(f"Notification schedule updated to {hour}:{minute}")
+
 notification_manager = NotificationManager()

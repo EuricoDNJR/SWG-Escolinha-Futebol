@@ -19,9 +19,7 @@ async def get_token_header(jwt_token: str = Header()):
 
             return "test"
 
-        print(jwt_token)
         decoded_token = auth.verify_id_token(jwt_token) 
-        print(decoded_token)
         if not decoded_token:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid JWT token"
