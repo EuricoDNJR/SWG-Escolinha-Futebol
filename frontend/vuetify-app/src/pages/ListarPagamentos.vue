@@ -3,7 +3,6 @@
   import { fetchGet, getFormatedDate, getColorDate } from '../utils/common'
   import { useAuthStore } from '../utils/store';
   import { useRouter } from 'vue-router';
-  import PageForm from '../components/PageForm.vue'
   
   const router = useRouter();
   const authStore = useAuthStore();
@@ -23,41 +22,20 @@
     { title: 'Status', key: 'status' },
     { title: '', key: 'data-table-expand' },
   ]);
-
-  const searchText = ref('');
-
-  const customBtns = ref([
-    {text: 'Voltar', variant: 'text', icon: undefined, color: undefined, clickEvent: 'voltar', needFormData: false, loading: false},
-    {text: 'Registrar', variant: 'flat', icon: 'mdi-account-plus', color: 'green-darken-1', clickEvent: 'registrar', needFormData: true, loading: false},
+  const expandedHeader = ref([
+    {title: 'Aluno', key: 'aluno'}, 
+    {title: 'Valor', key: 'valor'}, 
+    {title: 'Status', key: 'status'}, 
+    {title: 'Data de Vencimento', key: 'data_vencimento'}, 
+    {title: 'Data de Pagamento', key: 'data_pagamento'}, 
+    {title: 'Número da Parcela', key: 'parcela'}, 
   ]);
 
-  const eventFunctions = {
-    voltar: () => router.push('/menu/pagamentos/'),
-    registrar: (body) => requestRegistrarPagamento(body),
-  };
+  const searchText = ref('');
+ 
+  let debouncedRequestAllPayments = () => null;
 
-  const message = reactive({
-    text: '',
-    type: 'error',
-    isVisible: false,
-  });
 
-  function printMessage(msg, type){
-    message.text = msg;
-    message.type = type;
-    message.isVisible = true;
-  }
-
-  function btnClicked({event, body}){
-    const eventFunction = eventFunctions[event];
-
-    if(body){
-      eventFunction(body);
-    }else{
-      eventFunction();
-    }   
-  }
-  
   async function requestAllPayments(){
     loadingDataTable.value = true;
     
@@ -83,9 +61,18 @@
     loadingDataTable.value = false;
   }
 
+  function debounce(func, timeout = 300){
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+  } 
 
   onMounted(() => {
     requestAllPayments();
+
+    debouncedRequestAllPayments = debounce(requestAllPayments);
   });
 </script>
 
@@ -106,6 +93,7 @@
     :search="searchText"
     :loading="loadingDataTable"
     show-expand
+    class="max-width-100"
   >
     <template v-slot:item.data_vencimento="{ item }">
       <v-chip :color="getColorDate(item)">
@@ -114,36 +102,47 @@
     </template>
 
     <template v-slot:expanded-row="{ columns, item }">
-      <tr>
-        <td :colspan="columns.length">
-          More info about {{ item.valor }}
-        </td>
-      </tr>
+      <div class="d-flex flex-wrap">
+        <v-card
+          v-for="(obj, index) in expandedHeader"            
+          :key="index" 
+          class="ma-2"
+        >
+          <v-card-subtitle> {{obj.title}}</v-card-subtitle>
+
+          <v-card-text>{{ item[obj.key] }}</v-card-text>
+        </v-card>
+      </div>
     </template>
   </v-data-table-virtual>
 
   <v-pagination :key="reload"
     v-model="page"
     :length="qtdTotalPayments" 
-    @update:model-value="requestAllPayments"
+    @update:model-value="debouncedRequestAllPayments"
+    :disabled="loadingDataTable"
   ></v-pagination>
 
   <v-btn 
       color="grey-lighter-1"
       variant="flat"
       @click="() => router.push('/menu/pagamentos/')"
-      class="btn"
+      class="btn-voltar"
   >
       Voltar
   </v-btn>   
 </template>
 
-<style lang="css">
- .btn{
+<style scoped lang="css">
+ .btn-voltar{
     margin-top: 3vh;
     display: flex;
     width: 100%;
     height: 10vh;
     flex-grow: 1;
   } 
+
+  .max-width-100{
+    max-width: 100%;
+  }
 </style>

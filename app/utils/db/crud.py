@@ -150,7 +150,8 @@ def get_all_payments_with_pagination(offset: int, limit: int) -> List[dict]:
                 "status": payment.status,
                 "comprovante": payment.comprovante if payment.comprovante is not None else None,
                 "parcela": payment.parcela,
-                "aluno": payment.aluno.id
+                "aluno_id": payment.aluno.id,
+                "aluno": payment.aluno.nome
             }
             for payment in payments
         ]
