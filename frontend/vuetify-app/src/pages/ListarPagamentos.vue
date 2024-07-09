@@ -47,12 +47,14 @@
 
       if(response.status != 204){
         const responseJson = await response.json();
-
+        
         if(response.status === 200){
           qtdTotalPayments.value = Math.ceil(responseJson.total/10); // Quantidade de páginas necessárias
           pagamentos.value = responseJson.payments;
           responseJson.payments.forEach((item) => {
-            downloading[item.id] = false;
+            if(item.status == "Pago"){
+              downloading[item.id] = false;
+            }
           });
 
           reload.value = !reload.value; 
@@ -135,6 +137,7 @@
     :loading="loadingDataTable"
     show-expand
     class="max-width-100"
+    expand-on-click
   >
     <template v-slot:item.data_vencimento="{ item }">
       <v-chip :color="getColorDate(item)">
@@ -143,40 +146,45 @@
     </template>
 
     <template v-slot:expanded-row="{ columns, item }">
-      <div class="d-flex flex-wrap">
-        <v-card
-          v-for="(obj, index) in expandedHeader"            
-          :key="index" 
-          class="ma-2"
-        >
-          <v-card-subtitle> {{obj.title}}</v-card-subtitle>
+      <tr>
+        <td :colspan="columns.length">
+          <div class="d-flex flex-wrap">
+            <v-card
+              v-for="(obj, index) in expandedHeader"            
+              :key="index" 
+              class="ma-2"
+            >
+              <v-card-subtitle> {{obj.title}}</v-card-subtitle>
 
-          <v-card-text>{{ item[obj.key] }}</v-card-text>
-        </v-card>
+              <v-card-text>{{ item[obj.key] }}</v-card-text>
+            </v-card>
 
-        <v-card v-if="item.status=='Pago'"
-          class="ma-2"
-        >
-          <v-card-subtitle> Data de Pagamento </v-card-subtitle>
+            <v-card v-if="item.status=='Pago'"
+              class="ma-2"
+            >
+              <v-card-subtitle> Data de Pagamento </v-card-subtitle>
 
-          <v-card-text> {{ item.data_pagamento }} </v-card-text>
-        </v-card>
+              <v-card-text> {{ item.data_pagamento }} </v-card-text>
+            </v-card>
 
-        <v-card v-if="item.status=='Pago'"
-          class="ma-2"
-        >
-          <v-card-subtitle> Comprovante </v-card-subtitle>
-          
-          <v-btn 
-            prepend-icon="mdi-download" 
-            class="ma-2"
-            @click="() => downloadComprovante(item.id)"
-            :loading="downloading[item.id]"
-          >
-            Download
-          </v-btn>
-        </v-card>
-      </div>
+            <v-card v-if="item.status=='Pago'"
+              class="ma-2"
+            >
+              <v-card-subtitle> Comprovante </v-card-subtitle>
+              
+              <v-btn 
+                prepend-icon="mdi-download" 
+                class="ma-2"
+                @click="() => downloadComprovante(item.id)"
+                :loading="downloading[item.id]"
+              >
+                Download
+              </v-btn>
+            </v-card>
+          </div>
+        </td>
+      </tr>
+      
     </template>
   </v-data-table-virtual>
 

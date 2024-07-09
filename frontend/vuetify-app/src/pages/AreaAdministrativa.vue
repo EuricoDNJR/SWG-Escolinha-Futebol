@@ -22,6 +22,7 @@
     <v-btn class="btn font-weight-bold"
       prepend-icon="mdi-account-group"
       stacked
+      to="/menu/area-administrativa/listar-alunos/"
     >
       Listar Alunos
     </v-btn>
@@ -29,6 +30,7 @@
     <v-btn class="btn font-weight-bold"
       prepend-icon="mdi-list-box-outline"
       stacked
+      to="/menu/area-administrativa/listar-turmas/"
     >
       Listar Turmas
     </v-btn>
@@ -36,6 +38,7 @@
     <v-btn class="btn font-weight-bold"
       prepend-icon="mdi-account-multiple"
       stacked
+      to="/menu/area-administrativa/listar-usuarios/"
     >
       Listar Usuários
     </v-btn>

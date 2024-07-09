@@ -12,6 +12,9 @@ const CadastrarTurma = () => import('../pages/CadastrarTurma.vue');
 const Pagamentos = () => import('../pages/Pagamentos.vue'); 
 const RegistrarPagamento = () => import('../pages/RegistrarPagamento.vue'); 
 const ListarPagamentos = () => import('../pages/ListarPagamentos.vue'); 
+const ListarUsuarios = () => import('../pages/ListarUsuarios.vue'); 
+const ListarTurmas = () => import('../pages/ListarTurmas.vue'); 
+const ListarAlunos = () => import('../pages/ListarAlunos.vue'); 
 
 const routes = [
   { 
@@ -64,21 +67,43 @@ const routes = [
         path: 'area-administrativa/cadastrar-turma', 
         name: 'cadastrar-turma', 
         component: CadastrarTurma,
+        meta: { requiresAuth: true },
       },
       { 
         path: 'pagamentos', 
         name: 'pagamentos', 
         component: Pagamentos,
+        meta: { requiresAuth: true },
       },
       { 
         path: 'pagamentos/registrar-pagamento', 
         name: 'registrar-pagamento', 
         component: RegistrarPagamento,
+        meta: { requiresAuth: true },
       },
       { 
         path: 'pagamentos/listar-pagamentos', 
         name: 'listar-pagamentos', 
         component: ListarPagamentos,
+        meta: { requiresAuth: true },
+      },
+      { 
+        path: 'area-administrativa/listar-usuarios', 
+        name: 'listar-usuarios', 
+        component: ListarUsuarios,
+        meta: { requiresAuth: true },
+      },
+      { 
+        path: 'area-administrativa/listar-turmas', 
+        name: 'listar-turmas', 
+        component: ListarTurmas,
+        meta: { requiresAuth: true },
+      },
+      { 
+        path: 'area-administrativa/listar-alunos', 
+        name: 'listar-turmas', 
+        component: ListarAlunos,
+        meta: { requiresAuth: true },
       },
     ]
   },
