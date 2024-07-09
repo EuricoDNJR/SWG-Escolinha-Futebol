@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 import uuid
 from typing import List
 from peewee import fn
@@ -15,8 +15,8 @@ def create_responsible(nome: str, cpf: str, contato: str, data_nascimento: str, 
 def create_team(nome: str, idade_minima: int, idade_maxima: int, professor: str, horario_inicio: str, horario_fim: str, dias_semana: str):
     return models.Team.create(nome=nome, idade_minima=idade_minima, idade_maxima=idade_maxima, professor=professor, horario_inicio=horario_inicio, horario_fim=horario_fim, dias_semana=dias_semana)
 
-def create_student(nome: str, idade: int, cpf: str, contato: str, data_nascimento: str, email: str, especial: bool, time: str, situacao: str, responsavel: str):
-    return models.Student.create(nome=nome, idade=idade, cpf=cpf, contato=contato, data_nascimento=data_nascimento, email=email, especial=especial, time=time, situacao=situacao, responsavel=responsavel)
+def create_student(nome: str, idade: int, cpf: str, contato: str, data_nascimento: str, email: str, especial: bool, time: str, responsavel: str):
+    return models.Student.create(nome=nome, idade=idade, cpf=cpf, contato=contato, data_nascimento=data_nascimento, email=email, especial=especial, time=time, situacao='Ativo', responsavel=responsavel)
 
 def generate_payments(valor: float, aluno: str):
     try:
@@ -390,3 +390,15 @@ def get_team_by_id(team_id: str):
     except Exception as e:
         logging.error("Error getting team by id: " + str(e))
         return None
+    
+
+def get_all_payments_due_soon():
+    today = datetime.today()
+    due_soon = today + timedelta(days=3)
+    query = (models.Payment
+             .select(models.Payment, models.Student, models.Responsible)
+             .join(models.Student, on=(models.Payment.aluno == models.Student.id))
+             .join(models.Responsible, on=(models.Student.responsavel == models.Responsible.id))
+             .where((models.Payment.data_vencimento.between(today, due_soon)) & (models.Payment.status == "Pendente")))
+    return query
+
