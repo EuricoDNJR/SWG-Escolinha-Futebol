@@ -1,6 +1,6 @@
 <script setup>
-  import { ref, reactive, watch, onMounted } from 'vue';
-  import { fetchGet, getFormatedDate, getColorDate } from '../utils/common'
+  import { ref, reactive, onMounted } from 'vue';
+  import { fetchGet, fetchGetFile, getFormatedDate, getColorDate } from '../utils/common'
   import { useAuthStore } from '../utils/store';
   import { useRouter } from 'vue-router';
   
@@ -15,6 +15,7 @@
   const reload = ref(true);
 
   const loadingDataTable = ref(false);
+  const downloading = reactive({});
 
   const headers = ref([
     { title: 'Aluno', key: 'aluno' },
@@ -27,7 +28,6 @@
     {title: 'Valor', key: 'valor'}, 
     {title: 'Status', key: 'status'}, 
     {title: 'Data de Vencimento', key: 'data_vencimento'}, 
-    {title: 'Data de Pagamento', key: 'data_pagamento'}, 
     {title: 'Número da Parcela', key: 'parcela'}, 
   ]);
 
@@ -51,6 +51,10 @@
         if(response.status === 200){
           qtdTotalPayments.value = Math.ceil(responseJson.total/10); // Quantidade de páginas necessárias
           pagamentos.value = responseJson.payments;
+          responseJson.payments.forEach((item) => {
+            downloading[item.id] = false;
+          });
+
           reload.value = !reload.value; 
         }
       }
@@ -59,6 +63,43 @@
     }
 
     loadingDataTable.value = false;
+  }
+
+  async function downloadComprovante(id_pagamento){
+    downloading[id_pagamento] = true;
+
+    try{
+      const url = `http://127.0.0.1:8003/v1/download_comprovante/${id_pagamento}`;
+      const token = authStore.getToken;
+      
+      const response = await fetchGetFile(url, token);
+      const responseBlob = await response.blob();
+      const imageURL = URL.createObjectURL(responseBlob)
+
+      const contentDisposition = response.headers.get('Content-Disposition');
+
+      let fileName = 'downloaded_file'; // Nome padrão caso não seja encontrado no cabeçalho
+      if (contentDisposition && contentDisposition.indexOf('attachment') !== -1) {
+        const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(contentDisposition);
+
+        if (matches != null && matches[1]) { 
+          fileName = matches[1]; 
+        }
+      }
+      
+      //Solução Temporária, futuramente o backend vai me enviar o formato da iamgem
+      fileName += ".png"
+      const link = document.createElement('a')
+      link.href = imageURL
+      link.download = fileName
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    }catch(e){
+      console.log(e);
+    }
+
+    downloading[id_pagamento] = false;
   }
 
   function debounce(func, timeout = 300){
@@ -112,6 +153,29 @@
 
           <v-card-text>{{ item[obj.key] }}</v-card-text>
         </v-card>
+
+        <v-card v-if="item.status=='Pago'"
+          class="ma-2"
+        >
+          <v-card-subtitle> Data de Pagamento </v-card-subtitle>
+
+          <v-card-text> {{ item.data_pagamento }} </v-card-text>
+        </v-card>
+
+        <v-card v-if="item.status=='Pago'"
+          class="ma-2"
+        >
+          <v-card-subtitle> Comprovante </v-card-subtitle>
+          
+          <v-btn 
+            prepend-icon="mdi-download" 
+            class="ma-2"
+            @click="() => downloadComprovante(item.id)"
+            :loading="downloading[item.id]"
+          >
+            Download
+          </v-btn>
+        </v-card>
       </div>
     </template>
   </v-data-table-virtual>
@@ -138,7 +202,7 @@
     margin-top: 3vh;
     display: flex;
     width: 100%;
-    height: 10vh;
+    height: 8vh;
     flex-grow: 1;
   } 
 

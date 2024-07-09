@@ -20,7 +20,7 @@
     </v-btn>
 
     <v-btn class="btn font-weight-bold"
-      prepend-icon="mdi-list-box-outline"
+      prepend-icon="mdi-account-group"
       stacked
     >
       Listar Alunos
@@ -31,6 +31,13 @@
       stacked
     >
       Listar Turmas
+    </v-btn>
+
+    <v-btn class="btn font-weight-bold"
+      prepend-icon="mdi-account-multiple"
+      stacked
+    >
+      Listar Usuários
     </v-btn>
 
     <v-btn class="btn font-weight-bold"

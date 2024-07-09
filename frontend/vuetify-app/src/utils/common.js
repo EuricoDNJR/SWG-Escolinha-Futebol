@@ -59,6 +59,17 @@ export function fetchGet(url, token=undefined){
     return fetch(url, options);
 }
 
+export function fetchGetFile(url, token=undefined){
+    const methodName = 'GET';
+    const contentType = 'application/octet-stream';
+
+    const options = createFetchOptions(methodName, contentType, token);
+
+    return fetch(url, options);
+}
+
+
+
 export function fetchPost(url, body, token=undefined){
     const methodName = 'POST';
     const contentType = 'application/json';
