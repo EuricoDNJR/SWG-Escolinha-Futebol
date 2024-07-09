@@ -83,6 +83,8 @@
         
         if(response.status === 200){       
           printMessage("Pagamento registrado com sucesso", "success");
+        }else if(response.status === 404){
+          printMessage("Todos os pagamentos já foram registrados", "info");
         }else{
           printMessage("Erro ao registrar pagamento", "warning");
         }

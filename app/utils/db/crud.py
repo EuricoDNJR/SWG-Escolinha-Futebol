@@ -104,7 +104,8 @@ def get_all_teams():
                 "nome": team.nome,
                 "idade_minima": team.idade_minima,
                 "idade_maxima": team.idade_maxima,
-                "professor": team.professor.id,
+                "professor_id": team.professor.id,
+                "professor": team.professor.nome,
                 "horario_inicio": team.horario_inicio,
                 "horario_fim": team.horario_fim,
                 "dias_semana": team.dias_semana
@@ -150,7 +151,8 @@ def get_all_payments_with_pagination(offset: int, limit: int) -> List[dict]:
                 "status": payment.status,
                 "comprovante": payment.comprovante if payment.comprovante is not None else None,
                 "parcela": payment.parcela,
-                "aluno": payment.aluno.id
+                "aluno_id": payment.aluno.id,
+                "aluno": payment.aluno.nome
             }
             for payment in payments
         ]
@@ -170,7 +172,7 @@ def get_all_students_with_pagination(offset: int, limit: int) -> List[dict]:
                 "contato": student.contato,
                 "data_nascimento": str(student.data_nascimento),
                 "email": student.email if student.email is not None else None,
-                "especial": student.especial,
+                "especial": "Sim" if student.especial else "Não" ,
                 "equipe": student.time.nome,
                 "situacao": student.situacao,
                 "responsavel": student.responsavel.nome

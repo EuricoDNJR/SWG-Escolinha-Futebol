@@ -59,6 +59,17 @@ export function fetchGet(url, token=undefined){
     return fetch(url, options);
 }
 
+export function fetchGetFile(url, token=undefined){
+    const methodName = 'GET';
+    const contentType = 'application/octet-stream';
+
+    const options = createFetchOptions(methodName, contentType, token);
+
+    return fetch(url, options);
+}
+
+
+
 export function fetchPost(url, body, token=undefined){
     const methodName = 'POST';
     const contentType = 'application/json';
@@ -99,36 +110,6 @@ export function fetchDelete(url, token=undefined){
 
     return fetch(url, options);
 }
-
-// async function fetchAllRoles(token){
-//     const url = "http://127.0.0.1:8000/v1/cargo/get_all_roles/";
-//     const fetchResponse = await fetchGet(url, token);
-//     let allRolesJson = null;
-
-//     try{
-//         const responseJson = await fetchResponse.json();
-
-//         allRolesJson = responseJson;
-//     }catch(e){
-//         console.log(e);
-//     }
-
-//     return allRolesJson;
-// }
-
-// export async function getAllRolesArray(token){
-//     const cargos = [];
-
-//     const fetchResponse = await fetchAllRoles(token)
-    
-//     if(fetchResponse){
-//         fetchResponse.forEach((cargoObj) => {
-//             cargos.push(cargoObj.nome);
-//         });
-//     }
-
-//     return cargos;
-// }
 
 export function replaceNullToEmptyString(obj){
     const newObj = {...obj};
@@ -237,6 +218,30 @@ export function getFormatedDate(datetime){
     
     return null;
 }
+
+export function getColorDate({data_vencimento, status}){
+    let color = "blue";
+
+    if(data_vencimento && status){
+        const dataInicial = new Date();
+        const dataFinal = new Date(data_vencimento);
+        const diferencaEmMilissegundos = dataFinal - dataInicial;
+        const umDiaEmMilissegundos = 1000 * 60 * 60 * 24; // 1 dia = 24 horas * 60 minutos * 60
+        const diferencaEmDias = Math.floor(diferencaEmMilissegundos / umDiaEmMilissegundos);
+
+        if(status=="Pendente"){
+            if(diferencaEmDias < 0){
+                color = "red";
+            }else if(diferencaEmDias < 2){
+                color = "yellow";
+            }
+        }else{
+            color = "green";
+        }
+    }
+
+    return color;
+  }
 
 export function getFormatedDatetime(datetime){
     const [data, hora] = datetime.split(' ');

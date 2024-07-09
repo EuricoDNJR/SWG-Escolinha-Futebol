@@ -12,8 +12,9 @@
     </v-btn>
 
     <v-btn class="btn font-weight-bold"
-      prepend-icon="mdi-plus-box-outline"
+      prepend-icon="mdi-note-multiple-outline"
       stacked
+      to="/menu/pagamentos/listar-pagamentos/"
     >
       Listar Pagamentos
     </v-btn>
