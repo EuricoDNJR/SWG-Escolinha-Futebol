@@ -57,11 +57,11 @@
         
         const response = await fetchPost(url, body, token);
         const responseJson = await response.json();
-        
+
         if(response.status === 201){       
           printMessage("Cadastro realizado com sucesso", "success");
         }else{
-          printMessage("Erro ao realizar cadastro", "warning");
+          printMessage(responseJson.detail, "warning");
         }
     }catch(e){
         console.log(e);
