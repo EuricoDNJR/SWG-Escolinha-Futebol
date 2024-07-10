@@ -28,18 +28,21 @@ def notify_due_payments():
     payments_due_soon = get_all_payments_due_soon()
     for payment in payments_due_soon:
         to_email = payment.aluno.responsavel.email
-        subject = "Aviso de Vencimento de Parcela"
         
-        data_vencimento_formatada = payment.data_vencimento.strftime('%d-%m-%Y')
-        
-        body = f"""
-        <p>Prezado {payment.aluno.responsavel.nome},</p>
-        <p>Informamos que a parcela de {payment.valor} do aluno {payment.aluno.nome} está próxima do vencimento, no dia {data_vencimento_formatada}.</p>
-        <p>Por favor, efetue o pagamento o quanto antes.</p>
-        <p>Atenciosamente,</p>
-        <p>Equipe FARP</p>
-        """
-        send_email(to_email, subject, body)
+        if to_email is not None:
+            subject = "Aviso de Vencimento de Parcela"
+            data_vencimento_formatada = payment.data_vencimento.strftime('%d-%m-%Y')
+            body = f"""
+            <p>Prezado {payment.aluno.responsavel.nome},</p>
+            <p>Informamos que a parcela de {payment.valor} do aluno {payment.aluno.nome} está próxima do vencimento, no dia {data_vencimento_formatada}.</p>
+            <p>Por favor, efetue o pagamento o quanto antes.</p>
+            <p>Atenciosamente,</p>
+            <p>Equipe FARP</p>
+            """
+            send_email(to_email, subject, body)
+        else:
+            print(f"Responsável {payment.aluno.responsavel.nome} não tem um e-mail cadastrado. Não foi possível enviar a notificação.")
+
 
 
 def send_notifications_now():
