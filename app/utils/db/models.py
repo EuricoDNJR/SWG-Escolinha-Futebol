@@ -10,9 +10,9 @@ from app.utils.db.database import BaseModel
 class User(BaseModel):
     id = TextField(primary_key=True, default=uuid.uuid4)
     nome = TextField(column_name="nome", null=False)
-    firebaseId = TextField(unique=True, column_name="firebaseId", null=False)
-    createdAt = DateTimeField(column_name="createdAt")
-    firebaseIdWhoCreated = TextField(column_name="firebaseIdWhoCreated", null=False)
+    firebaseId = TextField(unique=True, column_name="firebaseid", null=False)
+    createdAt = DateTimeField(column_name="createdat")
+    firebaseIdWhoCreated = TextField(column_name="firebaseidwhocreated", null=False)
     email = TextField(column_name="email", null=False, unique=True)
     cargo = TextField(column_name="cargo", default="Professor", null=False)
 
@@ -25,7 +25,7 @@ class Responsible(BaseModel):
     cpf = TextField(column_name="cpf", null=False, unique=True)
     contato = TextField(column_name="contato", null=False)
     data_nascimento = DateField(column_name="data_nascimento", null=False)
-    email = TextField(column_name="email")
+    email = TextField(column_name="email", null=True)
 
     class Meta:
         table_name = "Responsible"
@@ -48,9 +48,9 @@ class Student(BaseModel):
     nome = TextField(column_name="nome", null=False)
     idade = IntegerField(column_name="idade", null=False)
     cpf = TextField(column_name="cpf", null=False, unique=True)
-    contato = TextField(column_name="contato", null=False)
+    contato = TextField(column_name="contato", null=True)
     data_nascimento = DateField(column_name="data_nascimento", null=False)
-    email = TextField(column_name="email")
+    email = TextField(column_name="email", null=True)
     especial = BooleanField(column_name="especial", default=False)
     time = ForeignKeyField(Team, column_name="time", backref="students")
     situacao = TextField(column_name="situacao", default="Ativo")
