@@ -26,9 +26,9 @@ class SignUpStudentSchema(BaseModel):
     nome:str
     idade:int
     cpf:str
-    contato: Optional[str]
+    contato: Optional[str] = None
     data_nascimento:str
-    email: Optional[str]
+    email: Optional[str] = None
     especial: Optional[bool] = False
     equipe: str
     responsavel: str
