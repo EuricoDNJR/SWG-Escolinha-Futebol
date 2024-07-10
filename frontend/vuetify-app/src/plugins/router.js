@@ -101,7 +101,7 @@ const routes = [
       },
       { 
         path: 'area-administrativa/listar-alunos', 
-        name: 'listar-turmas', 
+        name: 'listar-alunos', 
         component: ListarAlunos,
         meta: { requiresAuth: true },
       },

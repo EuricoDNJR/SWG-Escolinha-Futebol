@@ -157,8 +157,8 @@
     title="Matricular Aluno"
     :configs="[
       [createCelula({key:'nome', title:'Nome', required:true}), createCelula({key:'idade', title:'Idade', type:'number', required:true})],
-      [createCelula({key:'cpf', title:'Cpf', required:true}), createCelula({key:'contato', title:'Telefone', required:true})],
-      [createCelula({key:'data_nascimento', title:'Data de Nascimento', type: 'date', required:true}), createCelula({key:'email', title:'Email', required:true})],
+      [createCelula({key:'cpf', title:'Cpf', required:true}), createCelula({key:'contato', title:'Telefone'})],
+      [createCelula({key:'data_nascimento', title:'Data de Nascimento', type: 'date', required:true}), createCelula({key:'email', title:'Email'})],
       [createCelula({key:'especial', title:'Especial', type: 'select', required:true, initialValue: ''}), createCelula({key:'equipe', title:'Equipe', type: 'select', required:true, initialValue: ''})],
       [createCelula({key:'valor', title:'Valor da Mensalidade', type: 'number',  required:true}), createCelula({key:'responsavel', title:'Responsavel', type: 'select', required:true, initialValue: ''})],
     ]"

@@ -181,7 +181,8 @@ def get_all_students_with_pagination(offset: int, limit: int) -> List[dict]:
                 "especial": "Sim" if student.especial else "Não" ,
                 "equipe": student.time.nome,
                 "situacao": student.situacao,
-                "responsavel": student.responsavel.nome
+                "responsavel": student.responsavel.nome,
+                "email_responsavel": student.responsavel.email
             }
             for student in students
         ]
