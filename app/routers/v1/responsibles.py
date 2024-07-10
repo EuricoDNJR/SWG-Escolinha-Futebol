@@ -26,7 +26,7 @@ class SignUpResponsibleSchema(BaseModel):
     cpf:str
     contato:str
     data_nascimento:str
-    email: Optional[str]
+    email: Optional[str] = None
 
 
 @router.post('/responsible/', dependencies=[Depends(get_token_header)])
