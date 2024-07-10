@@ -184,7 +184,8 @@ def get_all_students_with_pagination(offset: int, limit: int) -> List[dict]:
                 "situacao": student.situacao,
                 "ano_escolar": student.ano_escolar,
                 "responsavel": student.responsavel.nome,
-                "email_responsavel": student.responsavel.email
+                "email_responsavel": student.responsavel.email,
+                "endereco_responsavel": student.responsavel.endereco
             }
             for student in students
         ]

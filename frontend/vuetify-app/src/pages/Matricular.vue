@@ -161,6 +161,7 @@
       [createCelula({key:'data_nascimento', title:'Data de Nascimento', type: 'date', required:true}), createCelula({key:'email', title:'Email'})],
       [createCelula({key:'especial', title:'Especial', type: 'select', required:true, initialValue: ''}), createCelula({key:'equipe', title:'Equipe', type: 'select', required:true, initialValue: ''})],
       [createCelula({key:'valor', title:'Valor da Mensalidade', type: 'number',  required:true}), createCelula({key:'responsavel', title:'Responsavel', type: 'select', required:true, initialValue: ''})],
+      [createCelula({key:'ano_escolar', title:'Ano escolar'})],
     ]"
     :fixies="[
       ['Especial.items', especialOpcoes],

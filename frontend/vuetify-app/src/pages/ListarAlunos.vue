@@ -33,6 +33,7 @@
     { title: 'Nome', key: 'nome' },
     { title: 'Responsável', key: 'responsavel' },
     { title: 'Email do Responsável', key: 'email_responsavel' },
+    { title: 'Endereço', key: 'endereco_responsavel' },
     { title: 'Email', key: 'email' },
     { title: 'Contato', key: 'contato' },
     { title: 'Cpf', key: 'cpf' },
@@ -41,6 +42,7 @@
     { title: 'Equipe', key: 'equipe' },
     { title: 'Situação', key: 'situacao' },
     { title: 'Data de Nascimento', key: 'data_nascimento' },
+    { title: 'Ano Escolar', key: 'ano_escolar' },
   ]);
 
   const alunos = ref([]);
