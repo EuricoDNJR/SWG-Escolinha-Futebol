@@ -141,7 +141,13 @@ def get_all_payments_by_student(aluno: str):
     
 def get_all_payments_with_pagination(offset: int, limit: int) -> List[dict]:
     try:
-        payments = models.Payment.select().offset(offset).limit(limit)
+        payments = models.Payment.select().order_by(
+            models.Payment.status.desc()
+        ).offset(offset).limit(limit)
+        
+        # Ordena pagamentos, movendo "Pago" para o fim
+        payments = sorted(payments, key=lambda p: (p.status == "Pago", p.data_vencimento))
+        
         return [
             {
                 "id": str(payment.id),
