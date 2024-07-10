@@ -9,14 +9,14 @@ from ...utils.helper import logging
 def create_user(firebaseId: str, firebaseIdWhoCreated: str, email: str, cargo: str, nome: str):
     return models.User.create(firebaseId=firebaseId, firebaseIdWhoCreated=firebaseIdWhoCreated, email=email, cargo=cargo, nome=nome)
 
-def create_responsible(nome: str, cpf: str, contato: str, data_nascimento: str, email: str = None):
-    return models.Responsible.create(nome=nome, cpf=cpf, contato=contato, data_nascimento=data_nascimento, email=email)
+def create_responsible(nome: str, cpf: str, contato: str, data_nascimento: str, email: str = None, endereco: str = None):
+    return models.Responsible.create(nome=nome, cpf=cpf, contato=contato, data_nascimento=data_nascimento, email=email, endereco=endereco)
 
 def create_team(nome: str, idade_minima: int, idade_maxima: int, professor: str, horario_inicio: str, horario_fim: str, dias_semana: str):
     return models.Team.create(nome=nome, idade_minima=idade_minima, idade_maxima=idade_maxima, professor=professor, horario_inicio=horario_inicio, horario_fim=horario_fim, dias_semana=dias_semana)
 
-def create_student(nome: str, idade: int, cpf: str, data_nascimento: str, especial: bool, time: str, responsavel: str, contato: str = None, email: str = None):
-    return models.Student.create(nome=nome, idade=idade, cpf=cpf, contato=contato, data_nascimento=data_nascimento, email=email, especial=especial, time=time, situacao='Ativo', responsavel=responsavel)
+def create_student(nome: str, idade: int, cpf: str, data_nascimento: str, especial: bool, time: str, responsavel: str, contato: str = None, email: str = None, ano_escolar: str = None):
+    return models.Student.create(nome=nome, idade=idade, cpf=cpf, contato=contato, data_nascimento=data_nascimento, email=email, especial=especial, time=time, situacao='Ativo', responsavel=responsavel, ano_escolar=ano_escolar)
 
 def generate_payments(valor: float, aluno: str):
     try:
@@ -87,7 +87,8 @@ def get_all_responsibles():
                 "cpf": responsible.cpf,
                 "contato": responsible.contato,
                 "data_nascimento": str(responsible.data_nascimento),
-                "email": responsible.email if responsible.email is not None else None
+                "email": responsible.email if responsible.email is not None else None,
+                "endereco": responsible.endereco if responsible.endereco is not None else None
             }
             for responsible in responsibles
         ]
@@ -181,6 +182,7 @@ def get_all_students_with_pagination(offset: int, limit: int) -> List[dict]:
                 "especial": "Sim" if student.especial else "Não" ,
                 "equipe": student.time.nome,
                 "situacao": student.situacao,
+                "ano_escolar": student.ano_escolar,
                 "responsavel": student.responsavel.nome,
                 "email_responsavel": student.responsavel.email
             }
@@ -233,7 +235,7 @@ def update_user(id: str, email=None, cargo=None, nome=None):
         logging.error("Error updating user: " + str(e))
         return None
 
-def update_student(id: str, nome=None, idade=None, cpf=None, contato=None, data_nascimento=None, email=None, especial=False, time=None, situacao=None, responsavel=None):
+def update_student(id: str, nome=None, idade=None, cpf=None, contato=None, data_nascimento=None, email=None, especial=False, time=None, situacao=None, ano_escolar=None, responsavel=None):
     try:
         student = models.Student.get(models.Student.id == id)
         if nome is not None:
@@ -254,6 +256,8 @@ def update_student(id: str, nome=None, idade=None, cpf=None, contato=None, data_
             student.time = time
         if situacao is not None:
             student.situacao = situacao
+        if ano_escolar is not None:
+            student.ano_escolar = ano_escolar
         if responsavel is not None:
             student.responsavel = responsavel
         student.save()
@@ -275,7 +279,7 @@ def update_payment_status(pagamento_id: str, comprovante_id: str):
         logging.error("Error updating payment status: " + str(e))
         return None
 
-def update_responsible(id: str, nome=None, cpf=None, contato=None, data_nascimento=None, email=None):
+def update_responsible(id: str, nome=None, cpf=None, contato=None, data_nascimento=None, email=None, endereco=None):
     try:
         responsible = models.Responsible.get(models.Responsible.id == id)
         if nome is not None:
@@ -288,6 +292,8 @@ def update_responsible(id: str, nome=None, cpf=None, contato=None, data_nascimen
             responsible.data_nascimento = data_nascimento
         if email is not None:
             responsible.email = email
+        if endereco is not None:
+            responsible.endereco = endereco
         responsible.save()
         return True
     except Exception as e:
@@ -340,7 +346,8 @@ def get_responsible_by_id(responsible_id: str):
             "cpf": responsible.cpf,
             "contato": responsible.contato,
             "data_nascimento": str(responsible.data_nascimento),
-            "email": responsible.email if responsible.email is not None else None
+            "email": responsible.email if responsible.email is not None else None,
+            "endereco": responsible.endereco if responsible.endereco is not None else None
         }
     except Exception as e:
         logging.error("Error getting responsible by id: " + str(e))
@@ -377,6 +384,7 @@ def get_student_by_id(student_id: str):
             "especial": student.especial,
             "equipe": student.time.nome,
             "situacao": student.situacao,
+            "ano_escolar": student.ano_escolar,
             "responsavel": student.responsavel.nome
         }
     except Exception as e:

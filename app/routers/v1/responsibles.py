@@ -27,6 +27,7 @@ class SignUpResponsibleSchema(BaseModel):
     contato:str
     data_nascimento:str
     email: Optional[str] = None
+    endereco: Optional[str] = None
 
 
 @router.post('/responsible/', dependencies=[Depends(get_token_header)])
@@ -40,7 +41,8 @@ async def create_responsible_account(responsible_data:SignUpResponsibleSchema, j
             "cpf": "12345678901",
             "contato": "123456789",
             "data_nascimento": "1999-01-01",
-            "email": "jose123@gmail.com"
+            "email": "testeempresadef@gmail.com",
+            "endereco": "Rua 1, 123"
         }
     
     """
@@ -53,7 +55,8 @@ async def create_responsible_account(responsible_data:SignUpResponsibleSchema, j
             cpf = responsible_data.cpf,
             contato = responsible_data.contato,
             data_nascimento = responsible_data.data_nascimento,
-            email = responsible_data.email
+            email = responsible_data.email,
+            endereco = responsible_data.endereco
         )
 
         logging.info("Responsible created successfully")
@@ -120,6 +123,7 @@ class UpdateResponsibleSchema(BaseModel):
     contato:Optional[str] = None
     data_nascimento:Optional[str] = None 
     email: Optional[str] = None
+    endereco: Optional[str] = None
 @router.patch('/update_responsible/{id}', dependencies=[Depends(get_token_header)])
 async def update_responsible(id:str, responsible_data: UpdateResponsibleSchema, jwt_token:str = Header(...)):
     """
@@ -131,7 +135,8 @@ async def update_responsible(id:str, responsible_data: UpdateResponsibleSchema, 
             "cpf": "12345678901",
             "contato": "123456789",
             "data_nascimento": "1999-01-01",
-            "email": "exemplo@gmail.com"
+            "email": "exemplo@gmail.com",
+            "endereco": "Rua 123, 321"
         }
     
     """
@@ -145,7 +150,8 @@ async def update_responsible(id:str, responsible_data: UpdateResponsibleSchema, 
             cpf = responsible_data.cpf,
             contato = responsible_data.contato,
             data_nascimento = responsible_data.data_nascimento,
-            email = responsible_data.email
+            email = responsible_data.email,
+            endereco = responsible_data.endereco
         )
 
         if responsible is None:
