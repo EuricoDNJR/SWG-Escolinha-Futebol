@@ -408,6 +408,13 @@ def get_team_by_id(team_id: str):
         logging.error("Error getting team by id: " + str(e))
         return None
     
+def update_payment_status():
+    today = datetime.today().date()
+    query = (models.Payment
+             .update(status="Em Atraso")
+             .where((models.Payment.data_vencimento < today) & (models.Payment.status == "Pendente")))
+    query.execute()
+    print("Status dos pagamentos atualizado para 'Em Atraso'.")
 
 def get_all_payments_due_soon():
     today = datetime.today()
