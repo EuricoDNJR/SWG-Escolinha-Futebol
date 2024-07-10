@@ -32,6 +32,7 @@
   const expandedHeader = ref([
     { title: 'Nome', key: 'nome' },
     { title: 'Responsável', key: 'responsavel' },
+    { title: 'Email do Responsável', key: 'email_responsavel' },
     { title: 'Email', key: 'email' },
     { title: 'Contato', key: 'contato' },
     { title: 'Cpf', key: 'cpf' },
