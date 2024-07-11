@@ -229,8 +229,10 @@ export function getColorDate({data_vencimento, status}){
         const umDiaEmMilissegundos = 1000 * 60 * 60 * 24; // 1 dia = 24 horas * 60 minutos * 60
         const diferencaEmDias = Math.floor(diferencaEmMilissegundos / umDiaEmMilissegundos);
 
-        if(status=="Pendente" && diferencaEmDias < 3){
-            color = "yellow";
+        if(status=="Pendente"){
+            if(diferencaEmDias < 3){
+                color = "yellow";
+            }
         }else if(status=="Em Atraso"){
             color = "red";
         }else{
