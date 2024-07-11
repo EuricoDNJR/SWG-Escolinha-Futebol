@@ -409,7 +409,7 @@ def get_team_by_id(team_id: str):
         logging.error("Error getting team by id: " + str(e))
         return None
     
-def update_payment_status():
+def update_payment_status_overdue():
     today = datetime.today().date()
     query = (models.Payment
              .update(status="Em Atraso")

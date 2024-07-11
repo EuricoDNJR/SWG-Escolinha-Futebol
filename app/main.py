@@ -6,7 +6,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from peewee import OperationalError
 from contextlib import asynccontextmanager
 
-from .utils.db.crud import update_payment_status
+from .utils.db.crud import update_payment_status_overdue
 from .routers.v1 import teams, users, responsibles, students, payments, notifications
 from .utils.helper import logging, db as database
 from .utils.notification_manager import notification_manager
@@ -126,7 +126,7 @@ async def lifespan(app: FastAPI):
     print("Inicializando lifespan context...")
     scheduler = AsyncIOScheduler()
     scheduler.add_job(ping_db, "interval", seconds=60)  # Intervalo de 1 minuto
-    scheduler.add_job(update_payment_status, "cron", hour=0)  # Executa diariamente à meia-noite
+    scheduler.add_job(update_payment_status_overdue, "cron", hour=0)  # Executa diariamente à meia-noite
     scheduler.start()
     print("Scheduler iniciado...")
     
