@@ -32,6 +32,7 @@ class SignUpStudentSchema(BaseModel):
     especial: Optional[bool] = False
     equipe: str
     responsavel: str
+    ano_escolar: Optional[str] = None
 
 
 @router.post('/student', dependencies=[Depends(get_token_header)])
@@ -48,6 +49,7 @@ async def create_student_account(student_data:SignUpStudentSchema, jwt_token:str
             "data_nascimento": "1999-01-01",
             "email": "joazin@gmail.com",
             "especial": false,
+            "ano_escolar": "5º ano",
             "equipe": "02bcca12-6f62-4671-84bb-141ee3a67e9d",
             "responsavel": "24ac5412-af03-4ea0-9fb4-643ed93c9b8d"
         }
@@ -66,7 +68,8 @@ async def create_student_account(student_data:SignUpStudentSchema, jwt_token:str
             email = student_data.email,
             especial = student_data.especial,
             time = student_data.equipe,
-            responsavel = student_data.responsavel
+            responsavel = student_data.responsavel,
+            ano_escolar = student_data.ano_escolar
         )
 
         logging.info("Student created successfully")
@@ -133,6 +136,7 @@ class UpdateStudentSchema(BaseModel):
     especial: Optional[bool] = False
     equipe: Optional[str] = None
     situacao: Optional[str] = None
+    ano_escolar: Optional[str] = None
     responsavel: Optional[str] = None
 @router.patch('/update_student/{id}', dependencies=[Depends(get_token_header)])
 async def update_student(id:str, student_data: UpdateStudentSchema, jwt_token:str = Header(...)):
@@ -150,6 +154,7 @@ async def update_student(id:str, student_data: UpdateStudentSchema, jwt_token:st
             "especial": false,
             "equipe": "02bcca12-6f62-4671-84bb-141ee3a67e9d",
             "situacao": "Ativo",
+            "ano_escolar": "5º ano",
             "responsavel": "24ac5412-af03-4ea0-9fb4-643ed93c9b8d"
         }
 
@@ -169,6 +174,7 @@ async def update_student(id:str, student_data: UpdateStudentSchema, jwt_token:st
             especial = student_data.especial,
             time = student_data.equipe,
             situacao = student_data.situacao,
+            ano_escolar=student_data.ano_escolar,
             responsavel = student_data.responsavel
         )
 

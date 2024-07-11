@@ -26,6 +26,7 @@ class Responsible(BaseModel):
     contato = TextField(column_name="contato", null=False)
     data_nascimento = DateField(column_name="data_nascimento", null=False)
     email = TextField(column_name="email", null=True)
+    endereco = TextField(column_name="endereco", null=True)
 
     class Meta:
         table_name = "Responsible"
@@ -54,6 +55,7 @@ class Student(BaseModel):
     especial = BooleanField(column_name="especial", default=False)
     time = ForeignKeyField(Team, column_name="time", backref="students")
     situacao = TextField(column_name="situacao", default="Ativo")
+    ano_escolar = TextField(column_name="ano_escolar", null=True)
     responsavel = ForeignKeyField(Responsible, column_name="responsavel", backref="students")
     class Meta:
         table_name = "Student"

@@ -230,11 +230,11 @@ export function getColorDate({data_vencimento, status}){
         const diferencaEmDias = Math.floor(diferencaEmMilissegundos / umDiaEmMilissegundos);
 
         if(status=="Pendente"){
-            if(diferencaEmDias < 0){
-                color = "red";
-            }else if(diferencaEmDias < 2){
+            if(diferencaEmDias < 3){
                 color = "yellow";
             }
+        }else if(status=="Em Atraso"){
+            color = "red";
         }else{
             color = "green";
         }
