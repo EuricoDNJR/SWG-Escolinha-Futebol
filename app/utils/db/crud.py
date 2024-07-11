@@ -427,3 +427,11 @@ def get_all_payments_due_soon():
              .where((models.Payment.data_vencimento.between(today, due_soon)) & (models.Payment.status == "Pendente")))
     return query
 
+def get_all_payments_overdue():
+    today = datetime.today().date()
+    query = (models.Payment
+             .select(models.Payment, models.Student, models.Responsible)
+             .join(models.Student, on=(models.Payment.aluno == models.Student.id))
+             .join(models.Responsible, on=(models.Student.responsavel == models.Responsible.id))
+             .where((models.Payment.data_vencimento < today) & (models.Payment.status == "Em Atraso")))
+    return query
