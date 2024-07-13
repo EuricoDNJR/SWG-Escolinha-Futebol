@@ -18,12 +18,12 @@ def create_team(nome: str, idade_minima: int, idade_maxima: int, professor: str,
 def create_student(nome: str, idade: int, cpf: str, data_nascimento: str, especial: bool, time: str, responsavel: str, contato: str = None, email: str = None, ano_escolar: str = None):
     return models.Student.create(nome=nome, idade=idade, cpf=cpf, contato=contato, data_nascimento=data_nascimento, email=email, especial=especial, time=time, situacao='Ativo', responsavel=responsavel, ano_escolar=ano_escolar)
 
-def generate_payments(valor: float, aluno: str):
+def generate_payments(valor: float, aluno: str, quant_parcelas: int = 6):
     try:
         hoje = date.today()
         proximo_vencimento = hoje
 
-        for i in range(1,13):
+        for i in range(1,quant_parcelas+1):
             proximo_vencimento += timedelta(days=30)
             models.Payment.create(
                 id=uuid.uuid4(),
@@ -435,3 +435,53 @@ def get_all_payments_overdue():
              .join(models.Responsible, on=(models.Student.responsavel == models.Responsible.id))
              .where((models.Payment.data_vencimento < today) & (models.Payment.status == "Em Atraso")))
     return query
+
+# Função para buscar todos os pagamentos pendentes do mes atual somados
+def get_payments_receivable_in_a_month():
+    today = datetime.today()
+    first_day = today.replace(day=1)
+    last_day = today.replace(day=1, month=today.month+1) - timedelta(days=1)
+    query = (models.Payment
+             .select(fn.SUM(models.Payment.valor).alias('total'))
+             .where((models.Payment.data_vencimento.between(first_day, last_day)) & (models.Payment.status == "Pendente")))
+    return query[0].total
+
+def get_payments_received_in_a_month():
+    today = datetime.today()
+    first_day = today.replace(day=1)
+    last_day = today.replace(day=1, month=today.month+1) - timedelta(days=1)
+    query = (models.Payment
+             .select(fn.SUM(models.Payment.valor).alias('total'))
+             .where((models.Payment.data_pagamento.between(first_day, last_day)) & (models.Payment.status == "Pago")))
+    return query[0].total
+
+def get_payments_receivable_overdue():
+    today = datetime.today().date()
+    query = (models.Payment
+             .select(fn.SUM(models.Payment.valor).alias('total'))
+             .where((models.Payment.data_vencimento < today) & (models.Payment.status == "Em Atraso")))
+    return query[0].total
+
+def get_students_per_team():
+    query = (models.Student
+             .select(models.Student.time, fn.COUNT(models.Student.id).alias('total'))
+             .group_by(models.Student.time))
+    return [
+        {
+            "equipe": student.time.nome,
+            "total": student.total
+        }
+        for student in query
+    ]
+
+def get_students_active_inactive():
+    query = (models.Student
+             .select(models.Student.situacao, fn.COUNT(models.Student.id).alias('total'))
+             .group_by(models.Student.situacao))
+    return [
+        {
+            "situacao": student.situacao,
+            "total": student.total
+        }
+        for student in query
+    ]

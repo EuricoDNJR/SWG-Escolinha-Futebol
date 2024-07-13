@@ -26,6 +26,7 @@ router = APIRouter()
 class GeneratePaymentSchema(BaseModel):
     valor: float
     aluno: str
+    quant_parcelas: Optional[int] = 6
 
 class PaymentOut(BaseModel):
     id: str
@@ -54,7 +55,8 @@ def payment_generate(payment_data: GeneratePaymentSchema, jwt_token: str = Heade
         
         {
             "valor": 100.00,
-            "aluno": "uuid"
+            "aluno": "uuid",
+            "quant_parcelas": 6
         }
 
     """
@@ -63,7 +65,8 @@ def payment_generate(payment_data: GeneratePaymentSchema, jwt_token: str = Heade
 
         payment = crud.generate_payments(
             valor=payment_data.valor,
-            aluno=payment_data.aluno
+            aluno=payment_data.aluno,
+            quant_parcelas=payment_data.quant_parcelas
         )
         if payment is None:
             return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"message": "Error generating payment"})
