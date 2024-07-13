@@ -190,6 +190,36 @@ def get_all_students_with_pagination(offset: int, limit: int) -> List[dict]:
         logging.error("Error getting students with pagination: " + str(e))
         return []
 
+def search_students_by_name(name: str) -> List[dict]:
+    try:
+        students = models.Student.select().where(
+            models.Student.nome.ilike(f'{name}%')
+        ).limit(10)
+
+        return [
+            {
+                "id": str(student.id),
+                "nome": student.nome,
+                "idade": student.idade,
+                "cpf": student.cpf,
+                "contato": student.contato,
+                "data_nascimento": str(student.data_nascimento),
+                "email": student.email,
+                "especial": student.especial,
+                "time_id": student.time.id,
+                "time_nome": student.time.nome,
+                "situacao": student.situacao,
+                "ano_escolar": student.ano_escolar,
+                "responsavel_id": student.responsavel.id,
+                "responsavel_nome": student.responsavel.nome
+            }
+            for student in students
+        ]
+    
+    except Exception as e:
+        logging.error("Error searching students by name: " + str(e))
+        return []
+
 def count_all_payments() -> int:
     try:
         return models.Payment.select().count()
