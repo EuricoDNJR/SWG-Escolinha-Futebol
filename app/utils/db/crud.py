@@ -146,9 +146,6 @@ def get_all_payments_with_pagination(offset: int, limit: int) -> List[dict]:
             models.Payment.status.desc()
         ).offset(offset).limit(limit)
         
-        # Ordena pagamentos, movendo "Pago" para o fim
-        payments = sorted(payments, key=lambda p: (p.status == "Pago", p.data_vencimento))
-        
         return [
             {
                 "id": str(payment.id),
