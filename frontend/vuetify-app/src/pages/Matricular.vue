@@ -118,10 +118,13 @@
       const bodyPayment = {
         valor: undefined,
         aluno: undefined,
+        quant_parcelas: undefined,
       }
 
       bodyPayment.valor = body["valor"];
       delete body["valor"];
+      bodyPayment.quant_parcelas = body["quant_parcelas"];
+      delete body["quant_parcelas"];
 
       const url = "http://127.0.0.1:8003/v1/student/";
       const token = authStore.getToken;
@@ -161,7 +164,7 @@
       [createCelula({key:'data_nascimento', title:'Data de Nascimento', type: 'date', required:true}), createCelula({key:'email', title:'Email'})],
       [createCelula({key:'especial', title:'Especial', type: 'select', required:true, initialValue: ''}), createCelula({key:'equipe', title:'Equipe', type: 'select', required:true, initialValue: ''})],
       [createCelula({key:'valor', title:'Valor da Mensalidade', type: 'number',  required:true}), createCelula({key:'responsavel', title:'Responsavel', type: 'select', required:true, initialValue: ''})],
-      [createCelula({key:'ano_escolar', title:'Ano escolar'})],
+      [createCelula({key:'ano_escolar', title:'Ano escolar'}), createCelula({key:'quant_parcelas', title:'Quantidade de Parcelas', type: 'number',  required:true})],
     ]"
     :fixies="[
       ['Especial.items', especialOpcoes],
