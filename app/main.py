@@ -7,7 +7,7 @@ from peewee import OperationalError
 from contextlib import asynccontextmanager
 
 from .utils.db.crud import update_payment_status_overdue
-from .routers.v1 import teams, users, responsibles, students, payments, notifications
+from .routers.v1 import teams, users, responsibles, students, payments, notifications, dashboard
 from .utils.helper import logging, db as database
 from .utils.notification_manager import notification_manager
 
@@ -90,6 +90,13 @@ app.include_router(
     notifications.router,
     prefix=f"/{route_version}",
     tags=["notifications"],
+    responses=response_404,
+)
+
+app.include_router(
+    dashboard.router,
+    prefix=f"/{route_version}",
+    tags=["dashboard"],
     responses=response_404,
 )
 
