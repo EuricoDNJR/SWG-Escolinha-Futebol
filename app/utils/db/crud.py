@@ -193,7 +193,7 @@ def get_all_students_with_pagination(offset: int, limit: int) -> List[dict]:
 def search_students_by_name(name: str) -> List[dict]:
     try:
         students = models.Student.select().where(
-            models.Student.nome.ilike(f'{name}%')
+            models.Student.nome.contains(name)
         ).limit(10)
 
         return [

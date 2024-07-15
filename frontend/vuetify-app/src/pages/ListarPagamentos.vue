@@ -75,28 +75,30 @@
       const token = authStore.getToken;
       
       const response = await fetchGetFile(url, token);
-      const responseBlob = await response.blob();
-      const imageURL = URL.createObjectURL(responseBlob)
 
-      const contentDisposition = response.headers.get('Content-Disposition');
+      if(response.ok){
+        const responseBlob = await response.blob();
+        const imageURL = URL.createObjectURL(responseBlob);
+        const contentDisposition = response.headers.get('Content-Disposition');
 
-      let fileName = 'downloaded_file'; // Nome padrão caso não seja encontrado no cabeçalho
-      if (contentDisposition && contentDisposition.indexOf('attachment') !== -1) {
-        const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(contentDisposition);
+        let fileName = 'downloaded_file'; // Nome padrão caso não seja encontrado no cabeçalho
+        if (contentDisposition && contentDisposition.indexOf('attachment') !== -1) {
+          const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(contentDisposition);
 
-        if (matches != null && matches[1]) { 
-          fileName = matches[1]; 
+          if (matches != null && matches[1]) { 
+            fileName = matches[1]; 
+          }
         }
+        
+        //Solução Temporária, futuramente o backend vai me enviar o formato da iamgem
+        fileName += ".png"
+        const link = document.createElement('a')
+        link.href = imageURL
+        link.download = fileName
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
       }
-      
-      //Solução Temporária, futuramente o backend vai me enviar o formato da iamgem
-      fileName += ".png"
-      const link = document.createElement('a')
-      link.href = imageURL
-      link.download = fileName
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
     }catch(e){
       console.log(e);
     }
