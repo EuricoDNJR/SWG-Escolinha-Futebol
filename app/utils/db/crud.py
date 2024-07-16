@@ -18,7 +18,7 @@ def create_team(nome: str, idade_minima: int, idade_maxima: int, professor: str,
 def create_student(nome: str, idade: int, cpf: str, data_nascimento: str, especial: bool, time: str, responsavel: str, contato: str = None, email: str = None, ano_escolar: str = None):
     return models.Student.create(nome=nome, idade=idade, cpf=cpf, contato=contato, data_nascimento=data_nascimento, email=email, especial=especial, time=time, situacao='Ativo', responsavel=responsavel, ano_escolar=ano_escolar)
 
-def generate_payments(valor: float, aluno: str, quant_parcelas: int = 6):
+def generate_payments(valor: float, aluno: str, quant_parcelas: int = 1):
     try:
         hoje = date.today()
         proximo_vencimento = hoje
