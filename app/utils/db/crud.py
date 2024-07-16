@@ -9,13 +9,13 @@ from ...utils.helper import logging
 def create_user(firebaseId: str, firebaseIdWhoCreated: str, email: str, cargo: str, nome: str):
     return models.User.create(firebaseId=firebaseId, firebaseIdWhoCreated=firebaseIdWhoCreated, email=email, cargo=cargo, nome=nome)
 
-def create_responsible(nome: str, cpf: str, contato: str, data_nascimento: str, email: str = None, endereco: str = None):
+def create_responsible(nome: str, cpf: str, contato: str, data_nascimento: str = None, email: str = None, endereco: str = None):
     return models.Responsible.create(nome=nome, cpf=cpf, contato=contato, data_nascimento=data_nascimento, email=email, endereco=endereco)
 
 def create_team(nome: str, idade_minima: int, idade_maxima: int, professor: str, horario_inicio: str, horario_fim: str, dias_semana: str):
     return models.Team.create(nome=nome, idade_minima=idade_minima, idade_maxima=idade_maxima, professor=professor, horario_inicio=horario_inicio, horario_fim=horario_fim, dias_semana=dias_semana)
 
-def create_student(nome: str, idade: int, cpf: str, data_nascimento: str, especial: bool, time: str, responsavel: str, contato: str = None, email: str = None, ano_escolar: str = None):
+def create_student(nome: str, especial: bool, time: str, responsavel: str, contato: str = None, email: str = None, ano_escolar: str = None, idade: int = None, cpf: str = None, data_nascimento: str = None):
     return models.Student.create(nome=nome, idade=idade, cpf=cpf, contato=contato, data_nascimento=data_nascimento, email=email, especial=especial, time=time, situacao='Ativo', responsavel=responsavel, ano_escolar=ano_escolar)
 
 def generate_payments(valor: float, aluno: str, quant_parcelas: int = 1):
@@ -118,7 +118,7 @@ def get_all_responsibles():
                 "nome": responsible.nome,
                 "cpf": responsible.cpf,
                 "contato": responsible.contato,
-                "data_nascimento": str(responsible.data_nascimento),
+                "data_nascimento": str(responsible.data_nascimento) if responsible.data_nascimento is not None else None,
                 "email": responsible.email if responsible.email is not None else None,
                 "endereco": responsible.endereco if responsible.endereco is not None else None
             }
@@ -203,15 +203,15 @@ def get_all_students_with_pagination(offset: int, limit: int) -> List[dict]:
             {
                 "id": str(student.id),
                 "nome": student.nome,
-                "idade": student.idade,
-                "cpf": student.cpf,
-                "contato": student.contato,
-                "data_nascimento": str(student.data_nascimento),
+                "idade": student.idade if student.idade is not None else None,
+                "cpf": student.cpf if student.cpf is not None else None,
+                "contato": student.contato if student.contato is not None else None,
+                "data_nascimento": str(student.data_nascimento) if student.data_nascimento is not None else None,
                 "email": student.email if student.email is not None else None,
                 "especial": "Sim" if student.especial else "Não" ,
                 "equipe": student.time.nome,
                 "situacao": student.situacao,
-                "ano_escolar": student.ano_escolar,
+                "ano_escolar": student.ano_escolar if student.ano_escolar is not None else None,
                 "responsavel": student.responsavel.nome,
                 "email_responsavel": student.responsavel.email,
                 "endereco_responsavel": student.responsavel.endereco
@@ -405,7 +405,7 @@ def get_responsible_by_id(responsible_id: str):
             "nome": responsible.nome,
             "cpf": responsible.cpf,
             "contato": responsible.contato,
-            "data_nascimento": str(responsible.data_nascimento),
+            "data_nascimento": str(responsible.data_nascimento) if responsible.data_nascimento is not None else None,
             "email": responsible.email if responsible.email is not None else None,
             "endereco": responsible.endereco if responsible.endereco is not None else None
         }
@@ -436,15 +436,15 @@ def get_student_by_id(student_id: str):
         return {
             "id": str(student.id),
             "nome": student.nome,
-            "idade": student.idade,
-            "cpf": student.cpf,
-            "contato": student.contato,
-            "data_nascimento": str(student.data_nascimento),
+            "idade": student.idade if student.idade is not None else None,
+            "cpf": student.cpf if student.cpf is not None else None,
+            "contato": student.contato if student.contato is not None else None,
+            "data_nascimento": str(student.data_nascimento) if student.data_nascimento is not None else None,
             "email": student.email if student.email is not None else None,
             "especial": student.especial,
             "equipe": student.time.nome,
             "situacao": student.situacao,
-            "ano_escolar": student.ano_escolar,
+            "ano_escolar": student.ano_escolar if student.ano_escolar is not None else None,
             "responsavel": student.responsavel.nome
         }
     except Exception as e:

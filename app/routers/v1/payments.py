@@ -47,55 +47,6 @@ class PaginatedPayments(BaseModel):
     page_size: int
     payments: List[PaymentOut]
 
-@router.post('/payment_generate/', dependencies=[Depends(get_token_header)])
-def payment_generate(payment_data: GeneratePaymentSchema, jwt_token: str = Header(...)):
-    """
-    Generate a payment for a student.
-    E.g:
-        
-        {
-            "valor": 100.00,
-            "aluno": "uuid",
-            "quant_parcelas": 6
-        }
-
-    """
-    try:
-        logging.info("Generating payment by user: " + jwt_token)
-
-        payment = crud.generate_payments(
-            valor=payment_data.valor,
-            aluno=payment_data.aluno,
-            quant_parcelas=payment_data.quant_parcelas
-        )
-        if payment is None:
-            return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"message": "Error generating payment"})
-
-        logging.info("Payment generated successfully")
-        return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Parcelas geradas com sucesso!"})
-    except Exception as e:
-        logging.error("Error generating payment: " + str(e))
-        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"message": "Error generating payment: " + str(e)})
-
-@router.get('/list_by_id/{id}', dependencies=[Depends(get_token_header)])
-def list_by_id(id:str, jwt_token:str = Header(...)):
-    """
-    List all payments by student id.
-    """
-
-    try:
-        logging.info("Listing payments by user: " + jwt_token)
-
-        payments = crud.get_all_payments_by_student(id)
-        if payments is None:
-            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "Payments not found"})
-        
-        logging.info("Payments listed successfully")
-        return JSONResponse(status_code=status.HTTP_200_OK, content=payments)
-    except Exception as e:
-        logging.error("Error listing payments: " + str(e))
-        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"message": "Error listing payments" + str(e)})
-
 @router.post('/add_installments/', dependencies=[Depends(get_token_header)])
 def add_installments(payment_data: GeneratePaymentSchema, jwt_token: str = Header(...)):
     """
@@ -126,6 +77,26 @@ def add_installments(payment_data: GeneratePaymentSchema, jwt_token: str = Heade
     except Exception as e:
         logging.error("Error adding installments: " + str(e))
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"message": "Error adding installments: " + str(e)})
+    
+@router.get('/list_by_id/{id}', dependencies=[Depends(get_token_header)])
+def list_by_id(id:str, jwt_token:str = Header(...)):
+    """
+    List all payments by student id.
+    """
+
+    try:
+        logging.info("Listing payments by user: " + jwt_token)
+
+        payments = crud.get_all_payments_by_student(id)
+        if payments is None:
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "Payments not found"})
+        
+        logging.info("Payments listed successfully")
+        return JSONResponse(status_code=status.HTTP_200_OK, content=payments)
+    except Exception as e:
+        logging.error("Error listing payments: " + str(e))
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"message": "Error listing payments" + str(e)})
+
 @router.get('/list_all/', response_model=PaginatedPayments, dependencies=[Depends(get_token_header)])
 def list_all_payments(
     page: int = Query(1, ge=1),
