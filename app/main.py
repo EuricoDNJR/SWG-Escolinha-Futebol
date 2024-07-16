@@ -1,6 +1,6 @@
 import os
 import dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from peewee import OperationalError
@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 
 from .utils.db.crud import update_payment_status_overdue
 from .routers.v1 import teams, users, responsibles, students, payments, notifications, dashboard
-from .utils.helper import logging, db as database
+from .utils.helper import logging, database
 from .utils.notification_manager import notification_manager
 
 dotenv.load_dotenv()
@@ -100,6 +100,15 @@ app.include_router(
     responses=response_404,
 )
 
+@app.middleware("http")
+async def open_and_close_db_session(request: Request, call_next):
+    logging.info("Opening RDS connection")
+    database.connect(reuse_if_open=True)
+    response = await call_next(request)
+    logging.info("Closing RDS connection")
+    database.close()
+    return response
+
 @app.get(
     "/",
     responses={
@@ -132,7 +141,7 @@ def ping_db():
 async def lifespan(app: FastAPI):
     print("Inicializando lifespan context...")
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(ping_db, "interval", seconds=60)  # Intervalo de 1 minuto
+    #scheduler.add_job(ping_db, "interval", seconds=60)  # Intervalo de 1 minuto
     scheduler.add_job(update_payment_status_overdue, "cron", hour=0)  # Executa diariamente à meia-noite
     scheduler.start()
     print("Scheduler iniciado...")

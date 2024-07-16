@@ -30,6 +30,10 @@ for handler in logger.handlers:
         CustomFormatter(fmt="%(asctime)s - %(levelname)s - %(message)s")
     )
 
+logging.info("Starting RDS connection")
+database = db
+logging.info("RDS connection started")
+
 logging.info("Starting Firebase connection")
 firebase = initialize_firebase()
 logging.info("Firebase connection started")
