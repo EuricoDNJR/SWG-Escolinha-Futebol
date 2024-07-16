@@ -24,10 +24,10 @@ from pydantic import BaseModel
 
 class SignUpStudentSchema(BaseModel):
     nome:str
-    idade:int
-    cpf:str
+    idade:Optional[int] = None
+    cpf:Optional[str] = None
     contato: Optional[str] = None
-    data_nascimento:str
+    data_nascimento:Optional[str] = None
     email: Optional[str] = None
     especial: Optional[bool] = False
     equipe: str
