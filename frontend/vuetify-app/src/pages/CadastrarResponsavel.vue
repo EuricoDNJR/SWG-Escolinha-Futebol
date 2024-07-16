@@ -73,7 +73,7 @@
     title="Cadastrar Responsável"
     :configs="[
       [createCelula({key:'nome', title:'Nome', required:true}), createCelula({key:'cpf', title:'Cpf', required:true}),],
-      [createCelula({key:'contato', title:'Telefone', required:true}), createCelula({key:'data_nascimento', title:'Data de Nascimento', type: 'date', required:true})],
+      [createCelula({key:'contato', title:'Telefone', required:true}), createCelula({key:'data_nascimento', title:'Data de Nascimento', type: 'date'})],
       [createCelula({key:'email', title:'Email'}), createCelula({key:'endereco', title:'Endereço'})],
     ]"
     :fixies="[]"
