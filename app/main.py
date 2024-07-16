@@ -141,7 +141,7 @@ def ping_db():
 async def lifespan(app: FastAPI):
     print("Inicializando lifespan context...")
     scheduler = AsyncIOScheduler()
-    #scheduler.add_job(ping_db, "interval", seconds=60)  # Intervalo de 1 minuto
+    scheduler.add_job(ping_db, "interval", seconds=60)  # Intervalo de 1 minuto
     scheduler.add_job(update_payment_status_overdue, "cron", hour=0)  # Executa diariamente à meia-noite
     scheduler.start()
     print("Scheduler iniciado...")
