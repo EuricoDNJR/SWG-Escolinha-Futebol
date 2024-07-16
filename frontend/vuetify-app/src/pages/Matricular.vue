@@ -90,7 +90,7 @@
 
   async function requestCriarPagamento(body){  
     try{
-      const url = "http://127.0.0.1:8003/v1/payment_generate/";
+      const url = "http://127.0.0.1:8003/v1/add_installments/";
       const token = authStore.getToken;
 
       await fetchPost(url, body, token);
