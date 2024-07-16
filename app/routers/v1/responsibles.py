@@ -25,7 +25,7 @@ class SignUpResponsibleSchema(BaseModel):
     nome:str
     cpf:str
     contato:str
-    data_nascimento:str
+    data_nascimento:Optional[str] = None
     email: Optional[str] = None
     endereco: Optional[str] = None
 

@@ -24,7 +24,7 @@ class Responsible(BaseModel):
     nome = TextField(column_name="nome", null=False)
     cpf = TextField(column_name="cpf", null=False, unique=True)
     contato = TextField(column_name="contato", null=False)
-    data_nascimento = DateField(column_name="data_nascimento", null=False)
+    data_nascimento = DateField(column_name="data_nascimento", null=True)
     email = TextField(column_name="email", null=True)
     endereco = TextField(column_name="endereco", null=True)
 

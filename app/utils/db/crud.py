@@ -9,7 +9,7 @@ from ...utils.helper import logging
 def create_user(firebaseId: str, firebaseIdWhoCreated: str, email: str, cargo: str, nome: str):
     return models.User.create(firebaseId=firebaseId, firebaseIdWhoCreated=firebaseIdWhoCreated, email=email, cargo=cargo, nome=nome)
 
-def create_responsible(nome: str, cpf: str, contato: str, data_nascimento: str, email: str = None, endereco: str = None):
+def create_responsible(nome: str, cpf: str, contato: str, data_nascimento: str = None, email: str = None, endereco: str = None):
     return models.Responsible.create(nome=nome, cpf=cpf, contato=contato, data_nascimento=data_nascimento, email=email, endereco=endereco)
 
 def create_team(nome: str, idade_minima: int, idade_maxima: int, professor: str, horario_inicio: str, horario_fim: str, dias_semana: str):
@@ -118,7 +118,7 @@ def get_all_responsibles():
                 "nome": responsible.nome,
                 "cpf": responsible.cpf,
                 "contato": responsible.contato,
-                "data_nascimento": str(responsible.data_nascimento),
+                "data_nascimento": str(responsible.data_nascimento) if responsible.data_nascimento is not None else None,
                 "email": responsible.email if responsible.email is not None else None,
                 "endereco": responsible.endereco if responsible.endereco is not None else None
             }
@@ -405,7 +405,7 @@ def get_responsible_by_id(responsible_id: str):
             "nome": responsible.nome,
             "cpf": responsible.cpf,
             "contato": responsible.contato,
-            "data_nascimento": str(responsible.data_nascimento),
+            "data_nascimento": str(responsible.data_nascimento) if responsible.data_nascimento is not None else None,
             "email": responsible.email if responsible.email is not None else None,
             "endereco": responsible.endereco if responsible.endereco is not None else None
         }
