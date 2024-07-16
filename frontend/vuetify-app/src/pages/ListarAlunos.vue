@@ -1,11 +1,38 @@
 <script setup>
-  import { ref, onMounted } from 'vue';
-  import { fetchGet, getFormatedDate, getColorDate } from '../utils/common'
+  import { ref, reactive, onMounted } from 'vue';
+  import { fetchGet, fetchPost, createCelula } from '../utils/common'
   import { useAuthStore } from '../utils/store';
   import { useRouter } from 'vue-router';
+  import PageForm from '../components/PageForm.vue'
   
   const router = useRouter();
   const authStore = useAuthStore();
+
+  const customBtns = ref([
+    {text: 'Fechar', variant: 'text', icon: undefined, color: undefined, clickEvent: 'fechar', needFormData: false, loading: false},
+    {text: 'Renovar', variant: 'flat', icon: 'mdi-autorenew', color: 'blue-darken-1', clickEvent: 'renovar', needFormData: true, loading: false},
+  ]);
+
+  const eventFunctions = {
+    fechar: () => {
+      dialog.value = false;
+
+      message.isVisible = false;
+    },
+    renovar: (body) => requestRenovarMatricula(body),
+  };
+
+  const message = reactive({
+    text: '',
+    type: 'error',
+    isVisible: false,
+  });
+
+  function printMessage(msg, type){
+    message.text = msg;
+    message.type = type;
+    message.isVisible = true;
+  }
 
   const expanded = ref([]);
   const qtdTotalPaginas = ref(0);
@@ -16,12 +43,7 @@
 
   const searchText = ref('');
 
-
-  
-  
-  
-  
-  
+  const dialog = ref(false);
 
   const headers = ref([
     { title: 'Nome', key: 'nome' },
@@ -46,9 +68,20 @@
   ]);
 
   const alunos = ref([]);
+  const aluno = ref(undefined);
 
   let debouncedRequestAllStudents = () => null;
-  
+
+  function btnClicked({event, body}){
+    const eventFunction = eventFunctions[event];
+
+    if(body){
+      eventFunction(body);
+    }else{
+      eventFunction();
+    }   
+  }
+
   async function requestAllStudents(){
     loadingDataTable.value = true;
     
@@ -76,6 +109,34 @@
     loadingDataTable.value = false;
   }
 
+  async function requestRenovarMatricula(body){  
+    const btn = customBtns.value.find((btn) => btn.clickEvent == "renovar");
+    btn.loading = true;
+
+    message.isVisible = false;
+
+    try{
+      const url = "http://127.0.0.1:8003/v1/add_installments/";
+      const token = authStore.getToken;
+
+      body.aluno = aluno.value;
+      console.log(body);
+
+      const response = await fetchPost(url, body, token);
+
+      if(response.status == 200){
+        printMessage("Renovação realizada com sucesso", "success");
+      }else{
+        printMessage("Erro ao realizar renovação", "warning");
+      }
+    }catch(e){
+      console.log(e);
+      printMessage("Falha ao renovar matricula", "warning");
+    }        
+
+    btn.loading = false;
+  }
+
   function debounce(func, timeout = 300){
     let timer;
     return (...args) => {
@@ -83,6 +144,12 @@
       timer = setTimeout(() => { func.apply(this, args); }, timeout);
     };
   } 
+
+  function openDialog(item){
+    aluno.value = item.id;
+
+    dialog.value = true;
+  }
 
   onMounted(() => {
     requestAllStudents();
@@ -122,6 +189,48 @@
             >
               <v-card-subtitle>{{ obj.title }}</v-card-subtitle>
               <v-card-text>{{ item[obj.key] }}</v-card-text>
+            </v-card>
+            
+            <v-card
+              class="ma-2"
+            >
+              <v-card-subtitle> Matricula </v-card-subtitle>
+              
+              <v-btn
+                class="ma-2"
+                prepend-icon="mdi-autorenew"
+                v-bind="activatorProps"
+                @click="() => openDialog(item)"
+              >
+                Renovar
+              </v-btn>
+
+              <v-dialog
+                v-model="dialog"
+              >
+                <v-card>
+                  <v-card-text>
+                    <PageForm :key="reload"
+                      title="Renovar Matrícula"
+                      :configs="[
+                        [createCelula({key:'valor', title:'Valor', type:'number', required:true}), createCelula({key:'quant_parcelas', title:'Quantidade de Parcelas', type:'number', required:true})],
+                      ]"
+                      :fixies="[]"
+                      :customBtns="customBtns"
+                      @clicked="btnClicked"
+                    />
+
+                    <v-alert
+                      :text="message.text"
+                      :type="message.type"
+                      variant="tonal"
+                      v-show="message.isVisible"
+                      density="compact"
+                      class="w-100 text-center"
+                    ></v-alert>
+                  </v-card-text>
+                </v-card>
+              </v-dialog>
             </v-card>
           </div>
         </td>
