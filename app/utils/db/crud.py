@@ -40,6 +40,38 @@ def generate_payments(valor: float, aluno: str, quant_parcelas: int = 6):
         logging.error("Error generating payments: " + str(e))
         return None
 
+def get_last_due(student_id: str):
+    try:
+        return models.Payment.select().where(models.Payment.aluno == student_id).order_by(models.Payment.parcela.desc()).first()
+    except Exception as e:
+        logging.error("Error getting last due: " + str(e))
+        return None
+    
+def add_installments(valor: float, aluno_id: str, quant_parcelas: int = 1):
+    try:
+        hoje = date.today()
+        proximo_vencimento = hoje
+        last_due = get_last_due(aluno_id)
+        if last_due.status == "Pendente":
+            proximo_vencimento = last_due.data_vencimento
+        for i in range(last_due.parcela + 1, last_due.parcela + quant_parcelas + 1):
+            proximo_vencimento += timedelta(days=30)
+            payment = models.Payment.create(
+                id=uuid.uuid4(),
+                valor=valor,  # Defina o valor adequado aqui
+                data_pagamento=None,
+                data_vencimento=proximo_vencimento,
+                status="Pendente",  # Defina o status inicial adequado aqui
+                comprovante=None,
+                aluno=aluno_id,
+                parcela=i
+            )
+            payment.save()
+        return True
+    except Exception as e:
+        logging.error("Error adding installments: " + str(e))
+        return None
+
 def get_all_users():
     users = models.User.select()
 

@@ -26,7 +26,7 @@ router = APIRouter()
 class GeneratePaymentSchema(BaseModel):
     valor: float
     aluno: str
-    quant_parcelas: Optional[int] = 6
+    quant_parcelas: Optional[int] = 1
 
 class PaymentOut(BaseModel):
     id: str
@@ -96,6 +96,36 @@ def list_by_id(id:str, jwt_token:str = Header(...)):
         logging.error("Error listing payments: " + str(e))
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"message": "Error listing payments" + str(e)})
 
+@router.post('/add_installments/', dependencies=[Depends(get_token_header)])
+def add_installments(payment_data: GeneratePaymentSchema, jwt_token: str = Header(...)):
+    """
+    Add installments to a student.
+    E.g:
+        
+        {
+            "valor": 100.00,
+            "aluno": "uuid",
+            "quant_parcelas": 6
+        }
+
+    """
+
+    try:
+        logging.info("Adding installments by user: " + jwt_token)
+
+        payment = crud.add_installments(
+            valor=payment_data.valor,
+            aluno_id=payment_data.aluno,
+            quant_parcelas=payment_data.quant_parcelas
+        )
+        if payment is None:
+            return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"message": "Error adding installments"})
+
+        logging.info("Installments added successfully")
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Parcelas adicionadas com sucesso!"})
+    except Exception as e:
+        logging.error("Error adding installments: " + str(e))
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"message": "Error adding installments: " + str(e)})
 @router.get('/list_all/', response_model=PaginatedPayments, dependencies=[Depends(get_token_header)])
 def list_all_payments(
     page: int = Query(1, ge=1),
