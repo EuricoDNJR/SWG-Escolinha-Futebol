@@ -1,7 +1,7 @@
 import os
 import dotenv
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from fastapi.responses import JSONResponse, StreamingResponse
 from ...dependencies import get_token_header
 from ...utils.db import crud
@@ -28,6 +28,8 @@ class GeneratePaymentSchema(BaseModel):
     aluno: str
     quant_parcelas: Optional[int] = 1
 
+    model_config = ConfigDict(from_attributes=True)
+
 class PaymentOut(BaseModel):
     id: str
     valor: float
@@ -38,8 +40,7 @@ class PaymentOut(BaseModel):
     parcela: int
     aluno: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class PaginatedPayments(BaseModel):
     total: int
@@ -47,6 +48,8 @@ class PaginatedPayments(BaseModel):
     page_size: int
     payments: List[PaymentOut]
 
+    model_config = ConfigDict(from_attributes=True)
+    
 @router.post('/add_installments/', dependencies=[Depends(get_token_header)])
 def add_installments(payment_data: GeneratePaymentSchema, jwt_token: str = Header(...)):
     """

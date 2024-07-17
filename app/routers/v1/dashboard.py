@@ -26,8 +26,6 @@ def payments_receivable_month(jwt_token: str = Header(...)):
     """
     try:
         payments = crud.get_payments_receivable_in_a_month()
-        if not payments:
-            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "No payments found."})
         return JSONResponse(status_code=status.HTTP_200_OK, content={"total": payments})
     except Exception as e:
         logging.error(f"Error getting payments: {e}")
@@ -40,8 +38,6 @@ def payments_receivable_overdue(jwt_token: str = Header(...)):
     """
     try:
         payments = crud.get_payments_receivable_overdue()
-        if not payments:
-            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "No payments found."})
         return JSONResponse(status_code=status.HTTP_200_OK, content={"total": payments})
     except Exception as e:
         logging.error(f"Error getting payments: {e}")
@@ -54,8 +50,6 @@ def payments_received_month(jwt_token: str = Header(...)):
     """
     try:
         payments = crud.get_payments_received_in_a_month()
-        if not payments:
-            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "No payments found."})
         return JSONResponse(status_code=status.HTTP_200_OK, content={"total": payments})
     except Exception as e:
         logging.error(f"Error getting payments: {e}")

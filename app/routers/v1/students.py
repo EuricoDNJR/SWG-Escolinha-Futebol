@@ -1,7 +1,7 @@
 import os
 import dotenv
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from fastapi.responses import JSONResponse
 from ...dependencies import get_token_header
 from ...utils.db import crud
@@ -34,6 +34,7 @@ class SignUpStudentSchema(BaseModel):
     responsavel: str
     ano_escolar: Optional[str] = None
 
+    model_config = ConfigDict(from_attributes=True)
 
 @router.post('/student', dependencies=[Depends(get_token_header)])
 async def create_student_account(student_data:SignUpStudentSchema, jwt_token:str = Header(...)):
@@ -155,6 +156,8 @@ class UpdateStudentSchema(BaseModel):
     situacao: Optional[str] = None
     ano_escolar: Optional[str] = None
     responsavel: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
 @router.patch('/update_student/{id}', dependencies=[Depends(get_token_header)])
 async def update_student(id:str, student_data: UpdateStudentSchema, jwt_token:str = Header(...)):
     """

@@ -510,31 +510,39 @@ def get_all_payments_overdue():
              .where((models.Payment.data_vencimento < today) & (models.Payment.status == "Em Atraso")))
     return query
 
-# Função para buscar todos os pagamentos pendentes do mes atual somados
+from datetime import datetime, timedelta
+from peewee import fn
+
+# Função para buscar todos os pagamentos pendentes do mês atual somados
 def get_payments_receivable_in_a_month():
     today = datetime.today()
     first_day = today.replace(day=1)
-    last_day = today.replace(day=1, month=today.month+1) - timedelta(days=1)
+    last_day = (today.replace(day=1, month=today.month+1) - timedelta(days=1))
     query = (models.Payment
              .select(fn.SUM(models.Payment.valor).alias('total'))
              .where((models.Payment.data_vencimento.between(first_day, last_day)) & (models.Payment.status == "Pendente")))
-    return query[0].total
+    result = query.dicts().get()
+    return result['total'] if result['total'] is not None else 0
 
+# Função para buscar todos os pagamentos recebidos do mês atual somados
 def get_payments_received_in_a_month():
     today = datetime.today()
     first_day = today.replace(day=1)
-    last_day = today.replace(day=1, month=today.month+1) - timedelta(days=1)
+    last_day = (today.replace(day=1, month=today.month+1) - timedelta(days=1))
     query = (models.Payment
              .select(fn.SUM(models.Payment.valor).alias('total'))
              .where((models.Payment.data_pagamento.between(first_day, last_day)) & (models.Payment.status == "Pago")))
-    return query[0].total
+    result = query.dicts().get()
+    return result['total'] if result['total'] is not None else 0
 
+# Função para buscar todos os pagamentos em atraso
 def get_payments_receivable_overdue():
     today = datetime.today().date()
     query = (models.Payment
              .select(fn.SUM(models.Payment.valor).alias('total'))
              .where((models.Payment.data_vencimento < today) & (models.Payment.status == "Em Atraso")))
-    return query[0].total
+    result = query.dicts().get()
+    return result['total'] if result['total'] is not None else 0
 
 def get_students_per_team():
     query = (models.Student
