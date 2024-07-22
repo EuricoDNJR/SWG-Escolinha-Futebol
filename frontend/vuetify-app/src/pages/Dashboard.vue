@@ -317,7 +317,7 @@
       </v-col>
     </v-row>
 
-    <v-row>
+    <v-row style="max-height: 500px;">
       <v-col>
         <v-skeleton-loader 
           type="image"
@@ -356,114 +356,29 @@
         </div> 
       </v-col>
     </v-row>
+
+      <v-btn 
+        variant="flat"
+        to="/menu/inicio/"
+        class="btn-voltar"
+    >
+        Voltar
+    </v-btn> 
   </div>
-
-  <!-- <div id="line-chart"
-    class="pa-4" 
-    color="grey-lighten-4"
-    v-show="isVisible.lineChart"
-  >
-    <canvas  
-      id="myLineChart"
-      width="400"
-      height="400"
-      class="elevation-2 rounded"></canvas>
-  </div>
-
-  <div id="clientes-mais-compraram-e-produtos-mais-vendidos"
-    class="pa-4" 
-    color="grey-lighten-4"
-  >
-    <v-row>
-      <v-col>
-        <v-card
-          class="elevation-2 rounded h-100"
-        >
-          <v-card-title><strong>Clientes que mais compraram</strong></v-card-title>
-          <v-list>
-            <v-list-item
-              color="primary"
-              rounded="xl"
-            >
-              <v-card v-for="(cliente, i) in clientsWhoMostPurchased" :key="i">
-                <v-card-item>
-                  <template v-slot:prepend>
-                    <v-icon icon="mdi-account" color="primary"></v-icon>
-                  </template>
-
-                  <v-card-title>
-                    {{ cliente.nome }}
-                    <v-chip color="green">
-                      R$ {{ cliente.total_comprado.replace('.', ',') }}
-                    </v-chip> 
-                  </v-card-title>
-
-                  <v-card-subtitle>
-                    {{ cliente.quantidade_pedidos }} pedidos no semestre
-                  </v-card-subtitle>
-                </v-card-item>
-              </v-card>
-            </v-list-item>
-          </v-list>
-        </v-card>
-      </v-col>
-
-      <v-col>
-        <v-card
-          class="elevation-2 rounded h-100"
-        >
-          <v-card-title><strong>Produtos mais vendidos</strong></v-card-title>
-        
-          <v-list>
-            <v-list-item
-              color="primary"
-              rounded="xl"
-            >
-              <v-card v-for="(produto, i) in topSellingProducts" :key="i">
-                <v-card-item>
-                  <template v-slot:prepend>
-                    <v-icon icon="mdi-tag" color="primary"></v-icon>
-                  </template>
-
-                  <v-card-title>
-                    {{ produto.nome }}
-                    <v-chip color="green">
-                      R$ {{ produto.total_vendido.replace('.', ',') }}
-                    </v-chip> 
-                  </v-card-title>
-
-                  <v-card-subtitle>
-                    8 vendas no semestre
-                  </v-card-subtitle> 
-                </v-card-item>
-              </v-card>
-            </v-list-item>
-          </v-list>
-        </v-card>
-      </v-col>
-    </v-row>
-  </div>
-
-  <div id="pie-chart"
-    class="pa-4" 
-    color="grey-lighten-4"
-    style="height: 450px;"
-    v-show="isVisible.pieChart"
-  >
-    <canvas  
-      id="myPieChart"
-      width="50"
-      height="50"
-      class="elevation-2 rounded"></canvas>
-  </div>  -->
 </template>
 
 <style scoped>
 .main{
-display: flex;
-flex-direction: column;
-background-color: #F5F5F5;
-height: 100%;
-padding: 20px;
+  display: flex;
+  flex-direction: column;
+  background-color: #F5F5F5;
+  height: 100%;
+  padding: 20px;
 }
+
+.btn-voltar{
+    width: 100%;
+    height: 7vh;
+    background-color: #F5F5F5;
+  } 
 </style>
