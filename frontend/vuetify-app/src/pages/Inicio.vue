@@ -41,6 +41,7 @@
     <v-btn class="btn font-weight-bold"
       prepend-icon="mdi-view-dashboard-outline"
       stacked
+      to="/menu/dashboard/"
     >
       Dashboard
     </v-btn>

@@ -15,6 +15,8 @@ const ListarPagamentos = () => import('../pages/ListarPagamentos.vue');
 const ListarUsuarios = () => import('../pages/ListarUsuarios.vue'); 
 const ListarTurmas = () => import('../pages/ListarTurmas.vue'); 
 const ListarAlunos = () => import('../pages/ListarAlunos.vue'); 
+const Dashboard = () => import('../pages/Dashboard.vue'); 
+
 
 const routes = [
   { 
@@ -103,6 +105,12 @@ const routes = [
         path: 'area-administrativa/listar-alunos', 
         name: 'listar-alunos', 
         component: ListarAlunos,
+        meta: { requiresAuth: true },
+      },
+      { 
+        path: 'dashboard', 
+        name: 'dashboard', 
+        component: Dashboard,
         meta: { requiresAuth: true },
       },
     ]
