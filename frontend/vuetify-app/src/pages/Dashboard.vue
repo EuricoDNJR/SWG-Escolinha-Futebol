@@ -186,7 +186,7 @@
           },
           title: {
             display: true,
-            text: 'Número de Estudantes por Turma',
+            text: 'Número de Alunos por Turma',
             font: {
               size: 18
             },
