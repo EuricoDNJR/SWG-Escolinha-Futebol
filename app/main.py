@@ -7,13 +7,24 @@ from peewee import OperationalError
 from contextlib import asynccontextmanager
 
 from .utils.db.crud import update_payment_status_overdue
-from .routers.v1 import teams, users, responsibles, students, payments, notifications, dashboard
+from .routers.v1 import (
+    teams,
+    users,
+    responsibles,
+    students,
+    payments,
+    notifications,
+    dashboard,
+)
 from .utils.helper import logging, database
 from .utils.notification_manager import notification_manager
 
 dotenv.load_dotenv()
 
 ENV = os.getenv("ENV")
+TEST = os.getenv("TEST")
+logging.info(f"ENV: {ENV}")
+logging.info(f"TEST: {TEST}")
 EMAIL_NOTIFICATIONS = os.getenv("EMAIL_NOTIFICATIONS")
 
 api_version = "v0.1.0"
@@ -46,7 +57,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["Content-Disposition"]
+    expose_headers=["Content-Disposition"],
 )
 
 response_404 = {404: {"description": "Not found"}}
@@ -100,6 +111,7 @@ app.include_router(
     responses=response_404,
 )
 
+
 @app.middleware("http")
 async def open_and_close_db_session(request: Request, call_next):
     logging.info("Opening RDS connection")
@@ -108,6 +120,7 @@ async def open_and_close_db_session(request: Request, call_next):
     logging.info("Closing RDS connection")
     database.close()
     return response
+
 
 @app.get(
     "/",
@@ -122,13 +135,14 @@ async def root():
     logging.info("Receiving request to root")
     return {"api-version": api_version}
 
+
 # Função de ping ao banco de dados
 def ping_db():
     print("Iniciando ping_db...")
     try:
         if database.is_closed():
             database.connect()
-        database.execute_sql('SELECT 1')
+        database.execute_sql("SELECT 1")
         print("Ping bem-sucedido!")
     except OperationalError as e:
         print(f"Erro ao pingar o banco de dados: {e}")
@@ -136,28 +150,33 @@ def ping_db():
         if not database.is_closed():
             database.close()
 
+
 # Gerenciador de ciclo de vida `lifespan`
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("Inicializando lifespan context...")
     scheduler = AsyncIOScheduler()
     scheduler.add_job(ping_db, "interval", seconds=60)  # Intervalo de 1 minuto
-    scheduler.add_job(update_payment_status_overdue, "cron", hour=0)  # Executa diariamente à meia-noite
+    scheduler.add_job(
+        update_payment_status_overdue, "cron", hour=0
+    )  # Executa diariamente à meia-noite
     scheduler.start()
     print("Scheduler iniciado...")
-    
+
     # Inicializa o gerenciador de notificações de acordo com a variável de ambiente
     if EMAIL_NOTIFICATIONS == "ON":
         print("Iniciando gerenciador de notificações...")
         notification_manager.start()
-    
+
     yield
-    
+
     print("Encerrando lifespan context...")
     scheduler.shutdown()
     print("Scheduler desligado...")
-    
+
     # Desliga o gerenciador de notificações
     notification_manager.stop()
     print("Gerenciador de notificações desligado.")
+
+
 app.router.lifespan_context = lifespan
