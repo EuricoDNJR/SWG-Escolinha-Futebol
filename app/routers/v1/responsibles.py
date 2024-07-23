@@ -1,7 +1,7 @@
 import os
 import dotenv
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from fastapi.responses import JSONResponse
 from ...dependencies import get_token_header
 from ...utils.db import crud
@@ -25,9 +25,11 @@ class SignUpResponsibleSchema(BaseModel):
     nome:str
     cpf:str
     contato:str
-    data_nascimento:str
+    data_nascimento:Optional[str] = None
     email: Optional[str] = None
     endereco: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 @router.post('/responsible/', dependencies=[Depends(get_token_header)])
@@ -124,6 +126,9 @@ class UpdateResponsibleSchema(BaseModel):
     data_nascimento:Optional[str] = None 
     email: Optional[str] = None
     endereco: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+    
 @router.patch('/update_responsible/{id}', dependencies=[Depends(get_token_header)])
 async def update_responsible(id:str, responsible_data: UpdateResponsibleSchema, jwt_token:str = Header(...)):
     """

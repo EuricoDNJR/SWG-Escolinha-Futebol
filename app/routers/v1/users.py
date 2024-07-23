@@ -1,7 +1,7 @@
 import os
 import dotenv
 from fastapi import APIRouter, Depends, Header, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from fastapi.responses import JSONResponse
 from ...utils.helper import firebase
@@ -24,9 +24,13 @@ class SignUpSchema(BaseModel):
     cargo:str
     nome:str
 
+    model_config = ConfigDict(from_attributes=True)
+
 class LoginSchema(BaseModel):
     email:str
     password:str
+
+    model_config = ConfigDict(from_attributes=True)
 
 @router.post('/signup/', dependencies=[Depends(get_token_header)])
 async def create_an_account(user_data:SignUpSchema, jwt_token:str = Header(...)):
@@ -85,7 +89,7 @@ async def create_an_account(user_data:SignUpSchema, jwt_token:str = Header(...))
 
 
 
-@router.post('/login')
+@router.post('/login/')
 async def create_access_token(user_data:LoginSchema):
     """
     Create an access token for the user.
@@ -118,13 +122,6 @@ async def create_access_token(user_data:LoginSchema):
         raise HTTPException(
             status_code=400,detail="Invalid Credentials"
         )
-
-@router.post('/ping', dependencies=[Depends(get_token_header)])
-async def validate_token(jwt_token:str = Header(...)):
-
-    user = auth.verify_id_token(jwt_token)
-
-    return user["uid"]
 
 @router.get('/all_users/', dependencies=[Depends(get_token_header)])
 async def get_all_users(jwt_token:str = Header(...)):
@@ -218,6 +215,8 @@ class UpdateUserSchema(BaseModel):
     password: Optional[str] = None
     cargo: Optional[str] = None
     nome: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
 
 @router.patch('/update_user/{id}', dependencies=[Depends(get_token_header)])
 async def update_user(id: str, user_data: UpdateUserSchema, jwt_token: str = Header(...)):

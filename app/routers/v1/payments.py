@@ -1,7 +1,7 @@
 import os
 import dotenv
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from fastapi.responses import JSONResponse, StreamingResponse
 from ...dependencies import get_token_header
 from ...utils.db import crud
@@ -26,6 +26,9 @@ router = APIRouter()
 class GeneratePaymentSchema(BaseModel):
     valor: float
     aluno: str
+    quant_parcelas: Optional[int] = 1
+
+    model_config = ConfigDict(from_attributes=True)
 
 class PaymentOut(BaseModel):
     id: str
@@ -37,8 +40,7 @@ class PaymentOut(BaseModel):
     parcela: int
     aluno: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class PaginatedPayments(BaseModel):
     total: int
@@ -46,34 +48,39 @@ class PaginatedPayments(BaseModel):
     page_size: int
     payments: List[PaymentOut]
 
-@router.post('/payment_generate/', dependencies=[Depends(get_token_header)])
-def payment_generate(payment_data: GeneratePaymentSchema, jwt_token: str = Header(...)):
+    model_config = ConfigDict(from_attributes=True)
+    
+@router.post('/add_installments/', dependencies=[Depends(get_token_header)])
+def add_installments(payment_data: GeneratePaymentSchema, jwt_token: str = Header(...)):
     """
-    Generate a payment for a student.
+    Add installments to a student.
     E.g:
         
         {
             "valor": 100.00,
-            "aluno": "uuid"
+            "aluno": "uuid",
+            "quant_parcelas": 6
         }
 
     """
-    try:
-        logging.info("Generating payment by user: " + jwt_token)
 
-        payment = crud.generate_payments(
+    try:
+        logging.info("Adding installments by user: " + jwt_token)
+
+        payment = crud.add_installments(
             valor=payment_data.valor,
-            aluno=payment_data.aluno
+            aluno_id=payment_data.aluno,
+            quant_parcelas=payment_data.quant_parcelas
         )
         if payment is None:
-            return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"message": "Error generating payment"})
+            return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"message": "Error adding installments"})
 
-        logging.info("Payment generated successfully")
-        return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Parcelas geradas com sucesso!"})
+        logging.info("Installments added successfully")
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Parcelas adicionadas com sucesso!"})
     except Exception as e:
-        logging.error("Error generating payment: " + str(e))
-        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"message": "Error generating payment: " + str(e)})
-
+        logging.error("Error adding installments: " + str(e))
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"message": "Error adding installments: " + str(e)})
+    
 @router.get('/list_by_id/{id}', dependencies=[Depends(get_token_header)])
 def list_by_id(id:str, jwt_token:str = Header(...)):
     """

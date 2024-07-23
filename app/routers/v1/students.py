@@ -1,7 +1,7 @@
 import os
 import dotenv
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from fastapi.responses import JSONResponse
 from ...dependencies import get_token_header
 from ...utils.db import crud
@@ -24,16 +24,17 @@ from pydantic import BaseModel
 
 class SignUpStudentSchema(BaseModel):
     nome:str
-    idade:int
-    cpf:str
+    idade:Optional[int] = None
+    cpf:Optional[str] = None
     contato: Optional[str] = None
-    data_nascimento:str
+    data_nascimento:Optional[str] = None
     email: Optional[str] = None
     especial: Optional[bool] = False
     equipe: str
     responsavel: str
     ano_escolar: Optional[str] = None
 
+    model_config = ConfigDict(from_attributes=True)
 
 @router.post('/student', dependencies=[Depends(get_token_header)])
 async def create_student_account(student_data:SignUpStudentSchema, jwt_token:str = Header(...)):
@@ -97,7 +98,24 @@ async def get_student_by_id(id:str, jwt_token:str = Header(...)):
     except Exception as e:
         logging.error(e)
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"message": "Erro ao buscar o aluno: " + str(e)})
-    
+
+@router.get('/search_students_by_name/{name}', dependencies=[Depends(get_token_header)])
+def search_by_name(name:str, jwt_token:str = Header(...)):
+    """
+    Search 10 first students by name.
+    """
+    try:
+        logging.info("Searching student by name: " + name)
+
+        students = crud.search_students_by_name(name)
+        if not students:
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "Aluno(s) não encontrado(s)"})
+
+        logging.info("Student(s) found successfully")
+        return JSONResponse(status_code=status.HTTP_200_OK, content=students)
+    except Exception as e:
+        logging.error(e)
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"message": "Erro ao buscar o(s) aluno(s): " + str(e)})
 @router.get('/list_all_students/', dependencies=[Depends(get_token_header)])
 async def list_all_students(page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
@@ -138,6 +156,8 @@ class UpdateStudentSchema(BaseModel):
     situacao: Optional[str] = None
     ano_escolar: Optional[str] = None
     responsavel: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
 @router.patch('/update_student/{id}', dependencies=[Depends(get_token_header)])
 async def update_student(id:str, student_data: UpdateStudentSchema, jwt_token:str = Header(...)):
     """

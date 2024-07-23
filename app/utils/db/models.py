@@ -24,7 +24,7 @@ class Responsible(BaseModel):
     nome = TextField(column_name="nome", null=False)
     cpf = TextField(column_name="cpf", null=False, unique=True)
     contato = TextField(column_name="contato", null=False)
-    data_nascimento = DateField(column_name="data_nascimento", null=False)
+    data_nascimento = DateField(column_name="data_nascimento", null=True)
     email = TextField(column_name="email", null=True)
     endereco = TextField(column_name="endereco", null=True)
 
@@ -47,10 +47,10 @@ class Team(BaseModel):
 class Student(BaseModel):
     id = TextField(primary_key=True, default=uuid.uuid4)
     nome = TextField(column_name="nome", null=False)
-    idade = IntegerField(column_name="idade", null=False)
-    cpf = TextField(column_name="cpf", null=False, unique=True)
+    idade = IntegerField(column_name="idade", null=True)
+    cpf = TextField(column_name="cpf", null=True)
     contato = TextField(column_name="contato", null=True)
-    data_nascimento = DateField(column_name="data_nascimento", null=False)
+    data_nascimento = DateField(column_name="data_nascimento", null=True)
     email = TextField(column_name="email", null=True)
     especial = BooleanField(column_name="especial", default=False)
     time = ForeignKeyField(Team, column_name="time", backref="students")

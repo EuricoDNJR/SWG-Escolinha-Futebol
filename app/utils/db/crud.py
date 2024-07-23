@@ -9,21 +9,21 @@ from ...utils.helper import logging
 def create_user(firebaseId: str, firebaseIdWhoCreated: str, email: str, cargo: str, nome: str):
     return models.User.create(firebaseId=firebaseId, firebaseIdWhoCreated=firebaseIdWhoCreated, email=email, cargo=cargo, nome=nome)
 
-def create_responsible(nome: str, cpf: str, contato: str, data_nascimento: str, email: str = None, endereco: str = None):
+def create_responsible(nome: str, cpf: str, contato: str, data_nascimento: str = None, email: str = None, endereco: str = None):
     return models.Responsible.create(nome=nome, cpf=cpf, contato=contato, data_nascimento=data_nascimento, email=email, endereco=endereco)
 
 def create_team(nome: str, idade_minima: int, idade_maxima: int, professor: str, horario_inicio: str, horario_fim: str, dias_semana: str):
     return models.Team.create(nome=nome, idade_minima=idade_minima, idade_maxima=idade_maxima, professor=professor, horario_inicio=horario_inicio, horario_fim=horario_fim, dias_semana=dias_semana)
 
-def create_student(nome: str, idade: int, cpf: str, data_nascimento: str, especial: bool, time: str, responsavel: str, contato: str = None, email: str = None, ano_escolar: str = None):
+def create_student(nome: str, especial: bool, time: str, responsavel: str, contato: str = None, email: str = None, ano_escolar: str = None, idade: int = None, cpf: str = None, data_nascimento: str = None):
     return models.Student.create(nome=nome, idade=idade, cpf=cpf, contato=contato, data_nascimento=data_nascimento, email=email, especial=especial, time=time, situacao='Ativo', responsavel=responsavel, ano_escolar=ano_escolar)
 
-def generate_payments(valor: float, aluno: str):
+def generate_payments(valor: float, aluno: str, quant_parcelas: int = 1):
     try:
         hoje = date.today()
         proximo_vencimento = hoje
 
-        for i in range(1,13):
+        for i in range(1,quant_parcelas+1):
             proximo_vencimento += timedelta(days=30)
             models.Payment.create(
                 id=uuid.uuid4(),
@@ -38,6 +38,53 @@ def generate_payments(valor: float, aluno: str):
         return True
     except Exception as e:
         logging.error("Error generating payments: " + str(e))
+        return None
+
+def get_last_due(student_id: str):
+    try:
+        return models.Payment.select().where(models.Payment.aluno == student_id).order_by(models.Payment.parcela.desc()).first()
+    except Exception as e:
+        logging.error("Error getting last due: " + str(e))
+        return None
+    
+def add_installments(valor: float, aluno_id: str, quant_parcelas: int = 1):
+    try:
+        hoje = date.today()
+        proximo_vencimento = hoje
+        last_due = get_last_due(aluno_id)
+        if last_due is not None:
+            if last_due.status == "Pendente":
+                proximo_vencimento = last_due.data_vencimento
+            for i in range(last_due.parcela + 1, last_due.parcela + quant_parcelas + 1):
+                proximo_vencimento += timedelta(days=30)
+                payment = models.Payment.create(
+                    id=uuid.uuid4(),
+                    valor=valor,  # Defina o valor adequado aqui
+                    data_pagamento=None,
+                    data_vencimento=proximo_vencimento,
+                    status="Pendente",  # Defina o status inicial adequado aqui
+                    comprovante=None,
+                    aluno=aluno_id,
+                    parcela=i
+                )
+                payment.save()
+        else:
+            for i in range(1, quant_parcelas + 1):
+                proximo_vencimento += timedelta(days=30)
+                payment = models.Payment.create(
+                    id=uuid.uuid4(),
+                    valor=valor,  # Defina o valor adequado aqui
+                    data_pagamento=None,
+                    data_vencimento=proximo_vencimento,
+                    status="Pendente",  # Defina o status inicial adequado aqui
+                    comprovante=None,
+                    aluno=aluno_id,
+                    parcela=i
+                )
+                payment.save()
+        return True
+    except Exception as e:
+        logging.error("Error adding installments: " + str(e))
         return None
 
 def get_all_users():
@@ -86,7 +133,7 @@ def get_all_responsibles():
                 "nome": responsible.nome,
                 "cpf": responsible.cpf,
                 "contato": responsible.contato,
-                "data_nascimento": str(responsible.data_nascimento),
+                "data_nascimento": str(responsible.data_nascimento) if responsible.data_nascimento is not None else None,
                 "email": responsible.email if responsible.email is not None else None,
                 "endereco": responsible.endereco if responsible.endereco is not None else None
             }
@@ -146,9 +193,6 @@ def get_all_payments_with_pagination(offset: int, limit: int) -> List[dict]:
             models.Payment.status.desc()
         ).offset(offset).limit(limit)
         
-        # Ordena pagamentos, movendo "Pago" para o fim
-        payments = sorted(payments, key=lambda p: (p.status == "Pago", p.data_vencimento))
-        
         return [
             {
                 "id": str(payment.id),
@@ -174,15 +218,15 @@ def get_all_students_with_pagination(offset: int, limit: int) -> List[dict]:
             {
                 "id": str(student.id),
                 "nome": student.nome,
-                "idade": student.idade,
-                "cpf": student.cpf,
-                "contato": student.contato,
-                "data_nascimento": str(student.data_nascimento),
+                "idade": student.idade if student.idade is not None else None,
+                "cpf": student.cpf if student.cpf is not None else None,
+                "contato": student.contato if student.contato is not None else None,
+                "data_nascimento": str(student.data_nascimento) if student.data_nascimento is not None else None,
                 "email": student.email if student.email is not None else None,
                 "especial": "Sim" if student.especial else "Não" ,
                 "equipe": student.time.nome,
                 "situacao": student.situacao,
-                "ano_escolar": student.ano_escolar,
+                "ano_escolar": student.ano_escolar if student.ano_escolar is not None else None,
                 "responsavel": student.responsavel.nome,
                 "email_responsavel": student.responsavel.email,
                 "endereco_responsavel": student.responsavel.endereco
@@ -191,6 +235,36 @@ def get_all_students_with_pagination(offset: int, limit: int) -> List[dict]:
         ]
     except Exception as e:
         logging.error("Error getting students with pagination: " + str(e))
+        return []
+
+def search_students_by_name(name: str) -> List[dict]:
+    try:
+        students = models.Student.select().where(
+            models.Student.nome.contains(name)
+        ).limit(10)
+
+        return [
+            {
+                "id": str(student.id),
+                "nome": student.nome,
+                "idade": student.idade,
+                "cpf": student.cpf,
+                "contato": student.contato,
+                "data_nascimento": str(student.data_nascimento),
+                "email": student.email,
+                "especial": student.especial,
+                "time_id": student.time.id,
+                "time_nome": student.time.nome,
+                "situacao": student.situacao,
+                "ano_escolar": student.ano_escolar,
+                "responsavel_id": student.responsavel.id,
+                "responsavel_nome": student.responsavel.nome
+            }
+            for student in students
+        ]
+    
+    except Exception as e:
+        logging.error("Error searching students by name: " + str(e))
         return []
 
 def count_all_payments() -> int:
@@ -346,7 +420,7 @@ def get_responsible_by_id(responsible_id: str):
             "nome": responsible.nome,
             "cpf": responsible.cpf,
             "contato": responsible.contato,
-            "data_nascimento": str(responsible.data_nascimento),
+            "data_nascimento": str(responsible.data_nascimento) if responsible.data_nascimento is not None else None,
             "email": responsible.email if responsible.email is not None else None,
             "endereco": responsible.endereco if responsible.endereco is not None else None
         }
@@ -377,15 +451,15 @@ def get_student_by_id(student_id: str):
         return {
             "id": str(student.id),
             "nome": student.nome,
-            "idade": student.idade,
-            "cpf": student.cpf,
-            "contato": student.contato,
-            "data_nascimento": str(student.data_nascimento),
+            "idade": student.idade if student.idade is not None else None,
+            "cpf": student.cpf if student.cpf is not None else None,
+            "contato": student.contato if student.contato is not None else None,
+            "data_nascimento": str(student.data_nascimento) if student.data_nascimento is not None else None,
             "email": student.email if student.email is not None else None,
             "especial": student.especial,
             "equipe": student.time.nome,
             "situacao": student.situacao,
-            "ano_escolar": student.ano_escolar,
+            "ano_escolar": student.ano_escolar if student.ano_escolar is not None else None,
             "responsavel": student.responsavel.nome
         }
     except Exception as e:
@@ -435,3 +509,61 @@ def get_all_payments_overdue():
              .join(models.Responsible, on=(models.Student.responsavel == models.Responsible.id))
              .where((models.Payment.data_vencimento < today) & (models.Payment.status == "Em Atraso")))
     return query
+
+from datetime import datetime, timedelta
+from peewee import fn
+
+# Função para buscar todos os pagamentos pendentes do mês atual somados
+def get_payments_receivable_in_a_month():
+    today = datetime.today()
+    first_day = today.replace(day=1)
+    last_day = (today.replace(day=1, month=today.month+1) - timedelta(days=1))
+    query = (models.Payment
+             .select(fn.SUM(models.Payment.valor).alias('total'))
+             .where((models.Payment.data_vencimento.between(first_day, last_day)) & (models.Payment.status == "Pendente")))
+    result = query.dicts().get()
+    return result['total'] if result['total'] is not None else 0
+
+# Função para buscar todos os pagamentos recebidos do mês atual somados
+def get_payments_received_in_a_month():
+    today = datetime.today()
+    first_day = today.replace(day=1)
+    last_day = (today.replace(day=1, month=today.month+1) - timedelta(days=1))
+    query = (models.Payment
+             .select(fn.SUM(models.Payment.valor).alias('total'))
+             .where((models.Payment.data_pagamento.between(first_day, last_day)) & (models.Payment.status == "Pago")))
+    result = query.dicts().get()
+    return result['total'] if result['total'] is not None else 0
+
+# Função para buscar todos os pagamentos em atraso
+def get_payments_receivable_overdue():
+    today = datetime.today().date()
+    query = (models.Payment
+             .select(fn.SUM(models.Payment.valor).alias('total'))
+             .where((models.Payment.data_vencimento < today) & (models.Payment.status == "Em Atraso")))
+    result = query.dicts().get()
+    return result['total'] if result['total'] is not None else 0
+
+def get_students_per_team():
+    query = (models.Student
+             .select(models.Student.time, fn.COUNT(models.Student.id).alias('total'))
+             .group_by(models.Student.time))
+    return [
+        {
+            "equipe": student.time.nome,
+            "total": student.total
+        }
+        for student in query
+    ]
+
+def get_students_active_inactive():
+    query = (models.Student
+             .select(models.Student.situacao, fn.COUNT(models.Student.id).alias('total'))
+             .group_by(models.Student.situacao))
+    return [
+        {
+            "situacao": student.situacao,
+            "total": student.total
+        }
+        for student in query
+    ]

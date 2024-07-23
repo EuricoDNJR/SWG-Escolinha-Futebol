@@ -1,7 +1,7 @@
 import os
 import dotenv
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from fastapi.responses import JSONResponse
 from ...dependencies import get_token_header
 from ...utils.db import crud
@@ -30,6 +30,7 @@ class SignUpTeamSchema(BaseModel):
     horario_fim:str
     dias_semana:str
 
+    model_config = ConfigDict(from_attributes=True)
 
 @router.post('/team/', dependencies=[Depends(get_token_header)])
 async def create_Team(team_data:SignUpTeamSchema, jwt_token:str = Header(...)):
@@ -128,6 +129,8 @@ class UpdateTeamSchema(BaseModel):
     horario_inicio:Optional[str] = None
     horario_fim:Optional[str] = None
     dias_semana:Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
 
 @router.patch('/update_team/{id}', dependencies=[Depends(get_token_header)])
 async def update_team(id:str, team_data:UpdateTeamSchema, jwt_token:str = Header(...)):
