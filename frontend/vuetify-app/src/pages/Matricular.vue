@@ -162,14 +162,14 @@
       [createCelula({key:'nome', title:'Nome', required:true}), createCelula({key:'idade', title:'Idade', type:'number'})],
       [createCelula({key:'cpf', title:'Cpf'}), createCelula({key:'contato', title:'Telefone'})],
       [createCelula({key:'data_nascimento', title:'Data de Nascimento', type: 'date'}), createCelula({key:'email', title:'Email'})],
-      [createCelula({key:'especial', title:'Especial', type: 'select', required:true, initialValue: ''}), createCelula({key:'equipe', title:'Equipe', type: 'select', required:true, initialValue: ''})],
+      [createCelula({key:'especial', title:'Pessoa com Deficiência (PCD)', type: 'select', required:true, initialValue: ''}), createCelula({key:'equipe', title:'Equipe', type: 'select', required:true, initialValue: ''})],
       [createCelula({key:'valor', title:'Valor da Mensalidade', type: 'number',  required:true}), createCelula({key:'responsavel', title:'Responsavel', type: 'select', required:true, initialValue: ''})],
       [createCelula({key:'ano_escolar', title:'Ano escolar'}), createCelula({key:'quant_parcelas', title:'Quantidade de Parcelas', type: 'number',  required:true})],
     ]"
     :fixies="[
-      ['Especial.items', especialOpcoes],
-      ['Especial.itemsTitle', 'nome'],
-      ['Especial.itemsValue', 'valor'],
+      ['Pessoa com Deficiência (PCD).items', especialOpcoes],
+      ['Pessoa com Deficiência (PCD).itemsTitle', 'nome'],
+      ['Pessoa com Deficiência (PCD).itemsValue', 'valor'],
       ['Equipe.items', equipes],
       ['Equipe.itemsTitle', 'nome'],
       ['Equipe.itemsValue', 'id'],
