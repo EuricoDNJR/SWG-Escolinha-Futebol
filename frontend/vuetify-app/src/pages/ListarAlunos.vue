@@ -60,7 +60,7 @@
     { title: 'Contato', key: 'contato' },
     { title: 'Cpf', key: 'cpf' },
     { title: 'Idade', key: 'idade' },
-    { title: 'Especial', key: 'especial' },
+    { title: 'Pessoa com Deficiência (PCD)', key: 'especial' },
     { title: 'Equipe', key: 'equipe' },
     { title: 'Situação', key: 'situacao' },
     { title: 'Data de Nascimento', key: 'data_nascimento' },

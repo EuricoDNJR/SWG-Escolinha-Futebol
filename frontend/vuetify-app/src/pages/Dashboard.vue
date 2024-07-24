@@ -197,7 +197,13 @@
           tooltip: {
             callbacks: {
               label: function(context){
-                return `${context.parsed} Alunos`;
+                let string = `${context.parsed} Aluno`
+                
+                if(context.parsed > 1){
+                  string += 's';
+                }
+
+                return string;
               },
             }
           },
@@ -252,7 +258,13 @@
           tooltip: {
             callbacks: {
               label: function(context){
-                return `${context.parsed} Alunos`;
+                let string = `${context.parsed} Aluno`
+                
+                if(context.parsed > 1){
+                  string += 's';
+                }
+
+                return string;
               },
             }
           },
