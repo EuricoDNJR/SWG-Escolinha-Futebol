@@ -191,8 +191,8 @@ def get_all_payments_with_pagination(offset: int, limit: int) -> List[dict]:
     try:
         payments = models.Payment.select().order_by(
             models.Payment.status.desc()
-        ).offset(offset).limit(limit)
-        
+        ).offset(offset)
+
         return [
             {
                 "id": str(payment.id),
@@ -205,7 +205,7 @@ def get_all_payments_with_pagination(offset: int, limit: int) -> List[dict]:
                 "aluno_id": payment.aluno.id,
                 "aluno": payment.aluno.nome
             }
-            for payment in payments
+            for payment in payments[:10]
         ]
     except Exception as e:
         logging.error("Error getting payments with pagination: " + str(e))
